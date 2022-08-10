@@ -91,12 +91,15 @@ public class PlayerCombatController : MonoBehaviour
         if (gotInput)
         {
             // Perform Attack1
-            gotInput = false;
-            isAttacking = true;
-            isFirstAttack = !isFirstAttack;
-            anim.SetBool("attack1", true);
-            anim.SetBool("firstAttack", isFirstAttack);
-            anim.SetBool("isAttacking", isAttacking);
+            if (!isAttacking)
+            {
+                gotInput = false;
+                isAttacking = true;
+                isFirstAttack = !isFirstAttack;
+                anim.SetBool("attack1", true);
+                anim.SetBool("firstAttack", isFirstAttack);
+                anim.SetBool("isAttacking", isAttacking);
+            }
         }
 
         if (Time.time >= lastInputTime + inputTimer)
