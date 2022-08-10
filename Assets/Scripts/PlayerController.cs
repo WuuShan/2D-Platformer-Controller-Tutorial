@@ -479,6 +479,15 @@ public class PlayerController : MonoBehaviour
     }
 
     /// <summary>
+    /// 获取角色面向方向
+    /// </summary>
+    /// <returns>左-1 右1</returns>
+    public int GetFacingDirection()
+    {
+        return facingDirection;
+    }
+
+    /// <summary>
     /// 检查冲刺
     /// </summary>
     private void CheckDash()
