@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 6500637038234460927}
   - component: {fileID: 357430834287373306}
   m_Layer: 0
-  m_Name: HitPartide
+  m_Name: Enemy1HitParticle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -76,7 +76,7 @@ SpriteRenderer:
   m_SortingLayer: 5
   m_SortingOrder: 10
   m_Sprite: {fileID: -554326471, guid: d834199cad5362647948c0e2345d773e, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.2509804, g: 0, b: 0, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
