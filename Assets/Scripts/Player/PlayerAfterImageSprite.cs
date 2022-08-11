@@ -26,7 +26,7 @@ public class PlayerAfterImageSprite : MonoBehaviour
     /// <summary>
     /// 透明度倍数
     /// </summary>
-    private float alphaMultiplier = 0.85f;
+    [SerializeField] private float alphaDecay = 0.85f;
 
     /// <summary>
     /// 玩家坐标
@@ -62,7 +62,7 @@ public class PlayerAfterImageSprite : MonoBehaviour
 
     private void Update()
     {
-        alpha *= alphaMultiplier;
+        alpha -= alphaDecay * Time.deltaTime;
         color = new Color(1f, 1f, 1f, alpha);
         SR.color = color;
 

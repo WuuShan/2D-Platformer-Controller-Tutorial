@@ -332,6 +332,7 @@ MonoBehaviour:
   knockbackDeathSpeedY: 8
   deathTorque: 1
   applyKnockback: 1
+  hitParticle: {fileID: 6500637038234460924, guid: 5f84b15994ddfdd4f8bd8f240aaaacb2, type: 3}
 --- !u!1 &4530091670697846827
 GameObject:
   m_ObjectHideFlags: 0
