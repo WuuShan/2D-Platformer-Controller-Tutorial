@@ -36,6 +36,14 @@ public class PlayerController : MonoBehaviour
     /// 上次冲刺时间
     /// </summary>
     private float lastDash = -100;
+    /// <summary>
+    /// 击退开始时间
+    /// </summary>
+    private float knockbackStartTime;
+    /// <summary>
+    /// 击退持续时间
+    /// </summary>
+    [SerializeField] private float knockbackDuration;
 
     /// <summary>
     /// 剩余跳跃次数
@@ -114,6 +122,15 @@ public class PlayerController : MonoBehaviour
     /// 是否在冲刺
     /// </summary>
     private bool isDashing;
+    /// <summary>
+    /// 击退
+    /// </summary>
+    private bool knockback;
+
+    /// <summary>
+    /// 击退速度向量
+    /// </summary>
+    [SerializeField] private Vector2 knockbackSpeed;
 
     /// <summary>
     /// 高角位置底部
@@ -262,6 +279,7 @@ public class PlayerController : MonoBehaviour
         CheckJump();
         CheckLedgeClimb();
         CheckDash();
+        CheckKnockback();
     }
 
     private void FixedUpdate()
@@ -282,6 +300,38 @@ public class PlayerController : MonoBehaviour
         else
         {
             isWallSliding = false;
+        }
+    }
+
+    /// <summary>
+    /// 获取冲刺状态
+    /// </summary>
+    /// <returns></returns>
+    public bool GetDashStatus()
+    {
+        return isDashing;
+    }
+
+    /// <summary>
+    /// 根据方向击退到指定距离
+    /// </summary>
+    /// <param name="direction"></param>
+    public void Knockback(int direction)
+    {
+        knockback = true;
+        knockbackStartTime = Time.time;
+        rb.velocity = new Vector2(knockbackSpeed.x * direction, knockbackSpeed.y);
+    }
+
+    /// <summary>
+    /// 检查击退
+    /// </summary>
+    private void CheckKnockback()
+    {
+        if (Time.time >= knockbackStartTime + knockbackDuration && knockback)
+        {
+            knockback = false;
+            rb.velocity = new Vector2(0.0f, rb.velocity.y);
         }
     }
 
@@ -603,11 +653,11 @@ public class PlayerController : MonoBehaviour
     /// </summary>
     private void ApplyMovement()
     {
-        if (!isGrounded && !isWallSliding && movementInputDirection == 0)  // 在空中不移动
+        if (!isGrounded && !isWallSliding && movementInputDirection == 0 && !knockback)  // 在空中不移动
         {
             rb.velocity = new Vector2(rb.velocity.x * airDragMultiplier, rb.velocity.y);
         }
-        else if (canMove)    // 在地面移动
+        else if (canMove && !knockback)    // 在地面移动
         {
             rb.velocity = new Vector2(movementSpeed * movementInputDirection, rb.velocity.y);
         }
@@ -642,7 +692,7 @@ public class PlayerController : MonoBehaviour
     /// </summary>
     private void Flip()
     {
-        if (!isWallSliding && canFlip)
+        if (!isWallSliding && canFlip && !knockback)
         {
             facingDirection *= -1;
             isFacingRight = !isFacingRight;
