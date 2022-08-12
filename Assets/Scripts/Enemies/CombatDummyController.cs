@@ -93,11 +93,19 @@ public class CombatDummyController : MonoBehaviour
     /// <summary>
     /// 根据伤害值减少对应生命值，并激活相应命中粒子、动画和位移
     /// </summary>
-    /// <param name="amount">伤害值</param>
-    private void Damage(float amount)
+    /// <param name="details">伤害值</param>
+    private void Damage(float[] details)
     {
-        currentHealth -= amount;
-        playerFacingDirection = pc.GetFacingDirection();
+        currentHealth -= details[0];
+
+        if (details[1] < aliveGO.transform.position.x)
+        {
+            playerFacingDirection = 1;
+        }
+        else
+        {
+            playerFacingDirection = -1;
+        }
 
         Instantiate(hitParticle, aliveGO.transform.position, Quaternion.Euler(0.0f, 0.0f, Random.Range(0.0f, 360.0f)));
 
