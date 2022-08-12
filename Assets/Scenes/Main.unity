@@ -21770,7 +21770,7 @@ GameObject:
   m_Component:
   - component: {fileID: 630423578}
   m_Layer: 7
-  m_Name: GroundCheck
+  m_Name: LedgeCheck
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -21986,7 +21986,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1374094685}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 18.48, y: -5.8, z: 0}
+  m_LocalPosition: {x: 7.15, y: 8.67, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -22058,7 +22058,7 @@ Rigidbody2D:
   m_LinearDrag: 0
   m_AngularDrag: 0.05
   m_GravityScale: 8
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 6200000, guid: 7972eb1b54ac17c41b41c17e4ea338d0, type: 2}
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 1
@@ -31586,32 +31586,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 1872973994}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3a0b8abd362f1bb42a414c6e2304260b, type: 3}
+  m_Script: {fileID: 11500000, guid: 9ceabb0b209052a4392fb3269c95063b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  groundCheckDistance: 0.5
-  wallCheckDistance: 0.1
-  movementSpeed: 3
-  maxHealth: 30
-  knockbackDuration: 0.1
-  lastTouchDamageTime: 0
-  touchDamageCooldown: 0.2
-  touchDamage: 10
-  touchDamageWidth: 1.5
-  touchDamageHeight: 0.9
-  groundCheck: {fileID: 630423578}
+  entityData: {fileID: 11400000, guid: 79c541ef8cd267c449b3ae15d0e1395a, type: 2}
   wallCheck: {fileID: 1723947018}
-  touchDamageCheck: {fileID: 2081152716}
-  whatIsGround:
-    serializedVersion: 2
-    m_Bits: 64
-  whatIsPlayer:
-    serializedVersion: 2
-    m_Bits: 512
-  knockbackSpeed: {x: 10, y: 5}
-  hitParticle: {fileID: 6500637038234460924, guid: 163ad5a4602b1594b86a8179a6dcd6c4, type: 3}
-  deathChunkParticle: {fileID: 1835207664453056127, guid: 84ad5ffb16d76f44aa563d186a20099b, type: 3}
-  deathBloodParticle: {fileID: 7257924573088189888, guid: be28c3275f16a50459ed01e14e565944, type: 3}
+  ledgeCheck: {fileID: 630423578}
+  idleStateData: {fileID: 11400000, guid: 1afeb82301496c949aa0aff88cd4ee07, type: 2}
+  moveStateData: {fileID: 11400000, guid: 48c01c9b56abf064dbc655b040911827, type: 2}
 --- !u!1 &1893720976
 GameObject:
   m_ObjectHideFlags: 0
