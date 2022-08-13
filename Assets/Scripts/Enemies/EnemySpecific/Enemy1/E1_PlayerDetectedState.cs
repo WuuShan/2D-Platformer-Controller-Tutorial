@@ -3,16 +3,16 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// 敌人1_待机状态
+/// 敌人1_玩家检测状态
 /// </summary>
-public class E1_IdleState : IdleState
+public class E1_PlayerDetectedState : PlayerDetectedState
 {
     /// <summary>
     /// 敌人
     /// </summary>
     private Enemy1 enemy;
 
-    public E1_IdleState(Entity entity, FiniteStateMachine stateMachine, string animBoolName, D_IdleState stateData, Enemy1 enemy) : base(entity, stateMachine, animBoolName, stateData)
+    public E1_PlayerDetectedState(Entity entity, FiniteStateMachine stateMachine, string animBoolName, D_PlayerDetected stateData, Enemy1 enemy) : base(entity, stateMachine, animBoolName, stateData)
     {
         this.enemy = enemy;
     }
@@ -31,14 +31,10 @@ public class E1_IdleState : IdleState
     {
         base.LogicUpdate();
 
-
-        if (isPlayerInMinAggroRange)
+        if (!isPlayerInMaxAggroRange)
         {
-            stateMachine.ChangeState(enemy.playerDetectedState);
-        }
-        else if (isIdleTimeOver)
-        {
-            stateMachine.ChangeState(enemy.moveState);
+            enemy.idleState.SetFlipAfterIdle(false);
+            stateMachine.ChangeState(enemy.idleState);
         }
     }
 

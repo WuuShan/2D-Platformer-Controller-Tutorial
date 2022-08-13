@@ -18,7 +18,20 @@ public class D_Entity : ScriptableObject
     public float ledgeCheckDistance = 0.4f;
 
     /// <summary>
+    /// 最小仇恨距离
+    /// </summary>
+    public float minAggroDistance = 3f;
+    /// <summary>
+    /// 最大仇恨距离
+    /// </summary>
+    public float maxAggroDistance = 4f;
+
+    /// <summary>
     /// 地面图层蒙版
     /// </summary>
     public LayerMask whatIsGround;
+    /// <summary>
+    /// 玩家图层蒙版
+    /// </summary>
+    public LayerMask whatIsPlayer;
 }

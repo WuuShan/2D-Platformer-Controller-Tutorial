@@ -32,6 +32,10 @@ public class Entity : MonoBehaviour
     /// 墙壁检查坐标
     /// </summary>
     [SerializeField] private Transform ledgeCheck;
+    /// <summary>
+    /// 玩家检测坐标
+    /// </summary>
+    [SerializeField] private Transform playerCheck;
 
     /// <summary>
     /// 速度区间
@@ -83,6 +87,24 @@ public class Entity : MonoBehaviour
     public virtual bool CheckLedge()
     {
         return Physics2D.Raycast(ledgeCheck.position, Vector2.down, entityData.ledgeCheckDistance, entityData.whatIsGround);
+    }
+
+    /// <summary>
+    /// 在最小仇恨范围内检查玩家
+    /// </summary>
+    /// <returns></returns>
+    public virtual bool CheckPlayerInMinAggroRange()
+    {
+        return Physics2D.Raycast(playerCheck.position, aliveGO.transform.right, entityData.minAggroDistance, entityData.whatIsPlayer);
+    }
+
+    /// <summary>
+    /// 在最大仇恨范围内检查玩家
+    /// </summary>
+    /// <returns></returns>
+    public virtual bool CheckPlayerInMaxAggroRange()
+    {
+        return Physics2D.Raycast(playerCheck.position, aliveGO.transform.right, entityData.maxAggroDistance, entityData.whatIsPlayer);
     }
 
     /// <summary>
