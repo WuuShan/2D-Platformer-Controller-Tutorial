@@ -20,6 +20,10 @@ public class IdleState : State
     /// 是否待机时间结束
     /// </summary>
     protected bool isIdleTimeOver;
+    /// <summary>
+    /// 玩家是否在最小仇恨范围内
+    /// </summary>
+    protected bool isPlayerInMinAggroRange;
 
     /// <summary>
     /// 待机时间
@@ -37,6 +41,7 @@ public class IdleState : State
 
         entity.SetVelocity(0);
         isIdleTimeOver = false;
+        isPlayerInMinAggroRange = entity.CheckPlayerInMinAggroRange();
         SetRandomIdleTime();
     }
 
@@ -63,6 +68,7 @@ public class IdleState : State
     public override void PhysicsUpdate()
     {
         base.PhysicsUpdate();
+        isPlayerInMinAggroRange = entity.CheckPlayerInMinAggroRange();
     }
 
     /// <summary>

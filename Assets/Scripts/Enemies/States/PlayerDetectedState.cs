@@ -3,29 +3,25 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// 移动状态
+/// 玩家检测状态
 /// </summary>
-public class MoveState : State
+public class PlayerDetectedState : State
 {
     /// <summary>
     /// 状态数据
     /// </summary>
-    protected D_MoveState stateData;
+    protected D_PlayerDetected stateData;
 
-    /// <summary>
-    /// 是否检测到墙壁
-    /// </summary>
-    protected bool isDetectingWall;
-    /// <summary>
-    /// 是否检测到高角
-    /// </summary>
-    protected bool isDetectingLedge;
     /// <summary>
     /// 玩家是否在最小仇恨范围内
     /// </summary>
     protected bool isPlayerInMinAggroRange;
+    /// <summary>
+    /// 玩家是否在最大仇恨范围内
+    /// </summary>
+    protected bool isPlayerInMaxAggroRange;
 
-    public MoveState(Entity entity, FiniteStateMachine stateMachine, string animBoolName, D_MoveState stateData) : base(entity, stateMachine, animBoolName)
+    public PlayerDetectedState(Entity entity, FiniteStateMachine stateMachine, string animBoolName, D_PlayerDetected stateData) : base(entity, stateMachine, animBoolName)
     {
         this.stateData = stateData;
     }
@@ -33,11 +29,11 @@ public class MoveState : State
     public override void Enter()
     {
         base.Enter();
-        entity.SetVelocity(stateData.movementSpeed);
 
-        isDetectingWall = entity.CheckWall();
-        isDetectingLedge = entity.CheckLedge();
+        entity.SetVelocity(0f);
+
         isPlayerInMinAggroRange = entity.CheckPlayerInMinAggroRange();
+        isPlayerInMaxAggroRange = entity.CheckPlayerInMaxAggroRange();
     }
 
     public override void Exit()
@@ -54,8 +50,7 @@ public class MoveState : State
     {
         base.PhysicsUpdate();
 
-        isDetectingWall = entity.CheckWall();
-        isDetectingLedge = entity.CheckLedge();
         isPlayerInMinAggroRange = entity.CheckPlayerInMinAggroRange();
+        isPlayerInMaxAggroRange = entity.CheckPlayerInMaxAggroRange();
     }
 }

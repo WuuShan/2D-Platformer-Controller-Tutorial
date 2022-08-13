@@ -21,6 +21,9 @@ public class State
     /// </summary>
     protected float startTime;
 
+    /// <summary>
+    /// 动画布尔名称
+    /// </summary>
     protected string animBoolName;
 
     public State(Entity entity, FiniteStateMachine stateMachine, string animBoolName)
