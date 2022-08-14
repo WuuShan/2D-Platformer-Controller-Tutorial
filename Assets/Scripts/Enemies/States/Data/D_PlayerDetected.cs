@@ -8,5 +8,8 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "newPlayerDetectedStateData", menuName = "Data/State Data/PlayerDetected State")]
 public class D_PlayerDetected : ScriptableObject
 {
-
+    /// <summary>
+    /// 远程动作时间
+    /// </summary>
+    public float longRangeActionTime = 1.5f;
 }

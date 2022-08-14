@@ -3,29 +3,33 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// 玩家检测状态
+/// 冲锋状态
 /// </summary>
-public class PlayerDetectedState : State
+public class ChargeState : State
 {
     /// <summary>
     /// 状态数据
     /// </summary>
-    protected D_PlayerDetected stateData;
+    protected D_ChargeState stateData;
 
     /// <summary>
     /// 玩家是否在最小仇恨范围内
     /// </summary>
     protected bool isPlayerInMinAggroRange;
     /// <summary>
-    /// 玩家是否在最大仇恨范围内
+    /// 是否检测到高角\地面
     /// </summary>
-    protected bool isPlayerInMaxAggroRange;
+    protected bool isDectectingLedge;
     /// <summary>
-    /// 执行远程动作
+    /// 是否检测到墙壁
     /// </summary>
-    protected bool performLongRangeAction;
+    protected bool isDectectingWall;
+    /// <summary>
+    /// 冲锋时间是否结束
+    /// </summary>
+    protected bool isChargeTimeOver;
 
-    public PlayerDetectedState(Entity entity, FiniteStateMachine stateMachine, string animBoolName, D_PlayerDetected stateData) : base(entity, stateMachine, animBoolName)
+    public ChargeState(Entity entity, FiniteStateMachine stateMachine, string animBoolName, D_ChargeState stateData) : base(entity, stateMachine, animBoolName)
     {
         this.stateData = stateData;
     }
@@ -34,8 +38,8 @@ public class PlayerDetectedState : State
     {
         base.Enter();
 
-        performLongRangeAction = false;
-        entity.SetVelocity(0f);
+        isChargeTimeOver = false;
+        entity.SetVelocity(stateData.chargeSpeed);
     }
 
     public override void Exit()
@@ -47,9 +51,9 @@ public class PlayerDetectedState : State
     {
         base.LogicUpdate();
 
-        if (Time.time >= startTime + stateData.longRangeActionTime)
+        if (Time.time >= startTime + stateData.chargeTime)
         {
-            performLongRangeAction = true;
+            isChargeTimeOver = true;
         }
     }
 
@@ -63,6 +67,7 @@ public class PlayerDetectedState : State
         base.DoChecks();
 
         isPlayerInMinAggroRange = entity.CheckPlayerInMinAggroRange();
-        isPlayerInMaxAggroRange = entity.CheckPlayerInMaxAggroRange();
+        isDectectingLedge = entity.CheckLedge();
+        isDectectingWall = entity.CheckWall();
     }
 }
