@@ -27,6 +27,11 @@ public class D_Entity : ScriptableObject
     public float maxAggroDistance = 4f;
 
     /// <summary>
+    /// 近程动作距离
+    /// </summary>
+    public float closeRangeActionDistance = 1f;
+
+    /// <summary>
     /// 地面图层蒙版
     /// </summary>
     public LayerMask whatIsGround;

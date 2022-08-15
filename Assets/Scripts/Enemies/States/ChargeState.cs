@@ -28,10 +28,25 @@ public class ChargeState : State
     /// 冲锋时间是否结束
     /// </summary>
     protected bool isChargeTimeOver;
+    /// <summary>
+    /// 执行近程动作
+    /// </summary>
+    protected bool performCloseRangeAction;
 
     public ChargeState(Entity entity, FiniteStateMachine stateMachine, string animBoolName, D_ChargeState stateData) : base(entity, stateMachine, animBoolName)
     {
         this.stateData = stateData;
+    }
+
+    public override void DoChecks()
+    {
+        base.DoChecks();
+
+        isPlayerInMinAggroRange = entity.CheckPlayerInMinAggroRange();
+        isDectectingLedge = entity.CheckLedge();
+        isDectectingWall = entity.CheckWall();
+
+        performCloseRangeAction = entity.CheckPlayerInCloseRangeAction();
     }
 
     public override void Enter()
@@ -60,14 +75,5 @@ public class ChargeState : State
     public override void PhysicsUpdate()
     {
         base.PhysicsUpdate();
-    }
-
-    public override void DoChecks()
-    {
-        base.DoChecks();
-
-        isPlayerInMinAggroRange = entity.CheckPlayerInMinAggroRange();
-        isDectectingLedge = entity.CheckLedge();
-        isDectectingWall = entity.CheckWall();
     }
 }

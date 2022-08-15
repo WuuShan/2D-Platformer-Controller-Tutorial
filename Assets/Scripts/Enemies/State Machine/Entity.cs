@@ -23,6 +23,7 @@ public class Entity : MonoBehaviour
     public Rigidbody2D rb { get; private set; }
     public Animator anim { get; private set; }
     public GameObject aliveGO { get; private set; }
+    public AnimationToStatemachine atsm { get; private set; }
 
     /// <summary>
     /// 墙壁检查坐标
@@ -49,6 +50,7 @@ public class Entity : MonoBehaviour
         aliveGO = transform.Find("Alive").gameObject;
         rb = aliveGO.GetComponent<Rigidbody2D>();
         anim = aliveGO.GetComponent<Animator>();
+        atsm = aliveGO.GetComponent<AnimationToStatemachine>();
 
         stateMachine = new FiniteStateMachine();
     }
@@ -66,7 +68,7 @@ public class Entity : MonoBehaviour
     /// <summary>
     /// 设置速度
     /// </summary>
-    /// <param name="velocity"></param>
+    /// <param name="velocity">速度</param>
     public virtual void SetVelocity(float velocity)
     {
         velocityWorkspace.Set(facingDirection * velocity, rb.velocity.y);
@@ -108,6 +110,15 @@ public class Entity : MonoBehaviour
     }
 
     /// <summary>
+    /// 检查近程动作中的玩家
+    /// </summary>
+    /// <returns></returns>
+    public virtual bool CheckPlayerInCloseRangeAction()
+    {
+        return Physics2D.Raycast(playerCheck.position, aliveGO.transform.right, entityData.closeRangeActionDistance, entityData.whatIsPlayer);
+    }
+
+    /// <summary>
     /// 翻转
     /// </summary>
     public virtual void Flip()
@@ -120,5 +131,9 @@ public class Entity : MonoBehaviour
     {
         Gizmos.DrawLine(wallCheck.position, wallCheck.position + (Vector3)(Vector2.right * facingDirection * entityData.wallCheckDistance));
         Gizmos.DrawLine(ledgeCheck.position, ledgeCheck.position + (Vector3)(Vector2.down * entityData.ledgeCheckDistance));
+
+        Gizmos.DrawWireSphere(playerCheck.position + (Vector3)(Vector2.right * entityData.closeRangeActionDistance), 0.2f);
+        Gizmos.DrawWireSphere(playerCheck.position + (Vector3)(Vector2.right * entityData.minAggroDistance), 0.2f);
+        Gizmos.DrawWireSphere(playerCheck.position + (Vector3)(Vector2.right * entityData.maxAggroDistance), 0.2f);
     }
 }
