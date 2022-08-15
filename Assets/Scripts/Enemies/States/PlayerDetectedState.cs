@@ -24,10 +24,24 @@ public class PlayerDetectedState : State
     /// 执行远程动作
     /// </summary>
     protected bool performLongRangeAction;
+    /// <summary>
+    /// 执行近程动作
+    /// </summary>
+    protected bool performCloseRangeAction;
 
     public PlayerDetectedState(Entity entity, FiniteStateMachine stateMachine, string animBoolName, D_PlayerDetected stateData) : base(entity, stateMachine, animBoolName)
     {
         this.stateData = stateData;
+    }
+
+    public override void DoChecks()
+    {
+        base.DoChecks();
+
+        isPlayerInMinAggroRange = entity.CheckPlayerInMinAggroRange();
+        isPlayerInMaxAggroRange = entity.CheckPlayerInMaxAggroRange();
+
+        performCloseRangeAction = entity.CheckPlayerInCloseRangeAction();
     }
 
     public override void Enter()
@@ -56,13 +70,5 @@ public class PlayerDetectedState : State
     public override void PhysicsUpdate()
     {
         base.PhysicsUpdate();
-    }
-
-    public override void DoChecks()
-    {
-        base.DoChecks();
-
-        isPlayerInMinAggroRange = entity.CheckPlayerInMinAggroRange();
-        isPlayerInMaxAggroRange = entity.CheckPlayerInMaxAggroRange();
     }
 }
