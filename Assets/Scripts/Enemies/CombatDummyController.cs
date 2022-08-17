@@ -94,11 +94,11 @@ public class CombatDummyController : MonoBehaviour
     /// 根据伤害值减少对应生命值，并激活相应命中粒子、动画和位移
     /// </summary>
     /// <param name="details">伤害值</param>
-    private void Damage(float[] details)
+    private void Damage(AttackDetails details)
     {
-        currentHealth -= details[0];
+        currentHealth -= details.damageAmount;
 
-        if (details[1] < aliveGO.transform.position.x)
+        if (details.position.x < aliveGO.transform.position.x)
         {
             playerFacingDirection = 1;
         }
