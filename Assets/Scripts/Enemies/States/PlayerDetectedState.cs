@@ -28,6 +28,10 @@ public class PlayerDetectedState : State
     /// 执行近程动作
     /// </summary>
     protected bool performCloseRangeAction;
+    /// <summary>
+    /// 是否检测到高角
+    /// </summary>
+    protected bool isDetectingLedge;
 
     public PlayerDetectedState(Entity entity, FiniteStateMachine stateMachine, string animBoolName, D_PlayerDetected stateData) : base(entity, stateMachine, animBoolName)
     {
@@ -40,7 +44,7 @@ public class PlayerDetectedState : State
 
         isPlayerInMinAggroRange = entity.CheckPlayerInMinAggroRange();
         isPlayerInMaxAggroRange = entity.CheckPlayerInMaxAggroRange();
-
+        isDetectingLedge = entity.CheckLedge();
         performCloseRangeAction = entity.CheckPlayerInCloseRangeAction();
     }
 

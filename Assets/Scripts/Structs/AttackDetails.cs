@@ -15,4 +15,8 @@ public struct AttackDetails
     /// 伤害值
     /// </summary>
     public float damageAmount;
+    /// <summary>
+    /// 减少攻击对象对应的眩晕抗性
+    /// </summary>
+    public float stunDamageAmount;
 }
