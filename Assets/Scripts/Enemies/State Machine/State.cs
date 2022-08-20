@@ -19,7 +19,7 @@ public class State
     /// <summary>
     /// 开始时间
     /// </summary>
-    protected float startTime;
+    public float startTime { get; protected set; }
 
     /// <summary>
     /// 动画布尔名称

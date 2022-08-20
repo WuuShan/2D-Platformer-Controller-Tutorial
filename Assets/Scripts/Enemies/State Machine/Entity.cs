@@ -91,6 +91,8 @@ public class Entity : MonoBehaviour
     {
         stateMachine.currentState.LogicUpdate();
 
+        anim.SetFloat("yVelocity", rb.velocity.y);
+
         if (Time.time >= lastDamageTime + entityData.stunRecoveryTime)
         {
             ResetStunResistance();
@@ -113,7 +115,7 @@ public class Entity : MonoBehaviour
     }
 
     /// <summary>
-    /// 设置击退速度
+    /// 设置矢量
     /// </summary>
     /// <param name="velocity">速度</param>
     /// <param name="angle">角度</param>
