@@ -21,6 +21,11 @@ public class PlayerState
     protected PlayerData playerData;
 
     /// <summary>
+    /// 动画是否结束
+    /// </summary>
+    protected bool isAnimationFinished;
+
+    /// <summary>
     /// 开始时间
     /// </summary>
     protected float startTime;
@@ -46,6 +51,7 @@ public class PlayerState
         DoChecks();
         player.Anim.SetBool(animBoolName, true);
         startTime = Time.time;
+        isAnimationFinished = false;
     }
 
     /// <summary>
@@ -59,10 +65,7 @@ public class PlayerState
     /// <summary>
     /// 逻辑更新
     /// </summary>
-    public virtual void LogicUpdate()
-    {
-
-    }
+    public virtual void LogicUpdate() { }
 
     /// <summary>
     /// 物理更新
@@ -75,8 +78,15 @@ public class PlayerState
     /// <summary>
     /// 检查
     /// </summary>
-    public virtual void DoChecks()
-    {
+    public virtual void DoChecks() { }
 
-    }
+    /// <summary>
+    /// 动画触发
+    /// </summary>
+    public virtual void AnimationTrigger() { }
+
+    /// <summary>
+    /// 动画结束触发
+    /// </summary>
+    public virtual void AnimationFinishTrigger() => isAnimationFinished = true;
 }
