@@ -21,6 +21,18 @@ public class Player : MonoBehaviour
     /// 移动状态
     /// </summary>
     public PlayerMoveState MoveState { get; private set; }
+    /// <summary>
+    /// 跳跃状态
+    /// </summary>
+    public PlayerJumpState JumpState { get; private set; }
+    /// <summary>
+    /// 空中状态
+    /// </summary>
+    public PlayerInAirState InAirState { get; private set; }
+    /// <summary>
+    /// 落地状态
+    /// </summary>
+    public PlayerLandState LandState { get; private set; }
 
     /// <summary>
     /// 玩家数据
@@ -35,6 +47,15 @@ public class Player : MonoBehaviour
     /// </summary>
     public PlayerInputHandler InputHandler { get; private set; }
     public Rigidbody2D RB { get; private set; }
+    #endregion
+
+    #region Check Transforms 检查坐标
+
+    /// <summary>
+    /// 地面检查坐标
+    /// </summary>
+    [SerializeField] private Transform groundCheck;
+
     #endregion
 
     #region Other Variables 其他变量
@@ -60,6 +81,9 @@ public class Player : MonoBehaviour
 
         IdleState = new PlayerIdleState(this, StateMachine, playerData, "idle");
         MoveState = new PlayerMoveState(this, StateMachine, playerData, "move");
+        JumpState = new PlayerJumpState(this, StateMachine, playerData, "inAir");
+        InAirState = new PlayerInAirState(this, StateMachine, playerData, "inAir");
+        LandState = new PlayerLandState(this, StateMachine, playerData, "land");
     }
 
     private void Start()
@@ -87,12 +111,23 @@ public class Player : MonoBehaviour
 
     #region Set Functions 设置函数
     /// <summary>
-    /// 根据速度设置X位移
+    /// 根据移动速度设置X轴位移
     /// </summary>
-    /// <param name="velocity">速度</param>
+    /// <param name="velocity">移动速度</param>
     public void SetVelocityX(float velocity)
     {
         workspace.Set(velocity, CurrentVelocity.y);
+        RB.velocity = workspace;
+        CurrentVelocity = workspace;
+    }
+
+    /// <summary>
+    /// 根据跳跃速度设置Y轴位移
+    /// </summary>
+    /// <param name="velocity">跳跃速度</param>
+    public void SetVelocityY(float velocity)
+    {
+        workspace.Set(CurrentVelocity.x, velocity);
         RB.velocity = workspace;
         CurrentVelocity = workspace;
     }
@@ -101,7 +136,16 @@ public class Player : MonoBehaviour
     #region Check Functions 检查函数
 
     /// <summary>
-    /// 根据横轴输入检查是否要翻转
+    /// 检查是否在地面
+    /// </summary>
+    /// <returns></returns>
+    public bool CheckIfGrounded()
+    {
+        return Physics2D.OverlapCircle(groundCheck.position, playerData.groundCheckRadius, playerData.whatIsGround);
+    }
+
+    /// <summary>
+    /// 根据X轴输入检查是否要翻转
     /// </summary>
     /// <param name="xInput">横轴输入</param>
     public void CheckIfShouldFlip(int xInput)
@@ -115,6 +159,16 @@ public class Player : MonoBehaviour
     #endregion
 
     #region Other Functions 其他函数
+
+    /// <summary>
+    /// 动画触发
+    /// </summary>
+    private void AnimationTrigger() => StateMachine.CurrentState.AnimationTrigger();
+
+    /// <summary>
+    /// 动画结束触发
+    /// </summary>
+    private void AnimationFinishTrigger() => StateMachine.CurrentState.AnimationFinishTrigger();
 
     /// <summary>
     /// 翻转

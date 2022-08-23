@@ -20,6 +20,29 @@ public class PlayerInputHandler : MonoBehaviour
     /// 标准化输入Y
     /// </summary>
     public int NormInputY { get; private set; }
+    /// <summary>
+    /// 跳跃输入
+    /// </summary>
+    public bool JumpInput { get; private set; }
+    /// <summary>
+    /// 跳跃输入停止
+    /// </summary>
+    public bool JumpInputStop { get; private set; }
+
+    /// <summary>
+    /// 输入保持时间
+    /// </summary>
+    [SerializeField] private float inputHoldTime = 0.2f;
+
+    /// <summary>
+    /// 跳跃输入开始时间
+    /// </summary>
+    private float jumpInputStartTime;
+
+    private void Update()
+    {
+        CheckJumpInputHoldTime();
+    }
 
     /// <summary>
     /// 注册移动输入
@@ -39,6 +62,32 @@ public class PlayerInputHandler : MonoBehaviour
     /// <param name="context"></param>
     public void OnJumpInput(InputAction.CallbackContext context)
     {
+        if (context.started)    // 按下
+        {
+            JumpInput = true;
+            JumpInputStop = false;
+            jumpInputStartTime = Time.time;
+        }
 
+        if (context.canceled)   // 松开
+        {
+            JumpInputStop = true;
+        }
+    }
+
+    /// <summary>
+    /// 使用跳跃输入
+    /// </summary>
+    public void UseJumpInput() => JumpInput = false;
+
+    /// <summary>
+    /// 检查跳跃输入保存时间
+    /// </summary>
+    private void CheckJumpInputHoldTime()
+    {
+        if (Time.time >= jumpInputStartTime + inputHoldTime)
+        {
+            JumpInput = false;
+        }
     }
 }
