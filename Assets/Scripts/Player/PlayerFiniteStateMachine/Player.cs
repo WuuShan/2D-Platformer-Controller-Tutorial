@@ -33,6 +33,18 @@ public class Player : MonoBehaviour
     /// 落地状态
     /// </summary>
     public PlayerLandState LandState { get; private set; }
+    /// <summary>
+    /// 滑墙状态
+    /// </summary>
+    public PlayerWallSlideState WallSlideState { get; private set; }
+    /// <summary>
+    /// 抓墙状态
+    /// </summary>
+    public PlayerWallGrabState WallGrabState { get; private set; }
+    /// <summary>
+    /// 爬墙状态
+    /// </summary>
+    public PlayerWallClimbState WallClimbState { get; private set; }
 
     /// <summary>
     /// 玩家数据
@@ -55,6 +67,10 @@ public class Player : MonoBehaviour
     /// 地面检查坐标
     /// </summary>
     [SerializeField] private Transform groundCheck;
+    /// <summary>
+    /// 墙壁检查坐标
+    /// </summary>
+    [SerializeField] private Transform wallCheck;
 
     #endregion
 
@@ -84,6 +100,9 @@ public class Player : MonoBehaviour
         JumpState = new PlayerJumpState(this, StateMachine, playerData, "inAir");
         InAirState = new PlayerInAirState(this, StateMachine, playerData, "inAir");
         LandState = new PlayerLandState(this, StateMachine, playerData, "land");
+        WallSlideState = new PlayerWallSlideState(this, StateMachine, playerData, "wallSlide");
+        WallGrabState = new PlayerWallGrabState(this, StateMachine, playerData, "wallGrab");
+        WallClimbState = new PlayerWallClimbState(this, StateMachine, playerData, "wallClimb");
     }
 
     private void Start()
@@ -142,6 +161,15 @@ public class Player : MonoBehaviour
     public bool CheckIfGrounded()
     {
         return Physics2D.OverlapCircle(groundCheck.position, playerData.groundCheckRadius, playerData.whatIsGround);
+    }
+
+    /// <summary>
+    /// 检查是否接触墙壁
+    /// </summary>
+    /// <returns></returns>
+    public bool CheckIfTouchingWall()
+    {
+        return Physics2D.Raycast(wallCheck.position, Vector2.right * FacingDirection, playerData.wallCheckDistance, playerData.whatIsGround);
     }
 
     /// <summary>

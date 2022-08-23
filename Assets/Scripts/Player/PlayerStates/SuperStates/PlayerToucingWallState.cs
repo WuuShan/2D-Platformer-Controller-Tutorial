@@ -3,35 +3,43 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// 玩家地面状态
+/// 玩家接触墙状态
 /// </summary>
-public class PlayerGroundedState : PlayerState
+public class PlayerToucingWallState : PlayerState
 {
-    /// <summary>
-    /// 横轴输入
-    /// </summary>
-    protected int xInput;
-
-    /// <summary>
-    /// 跳跃输入
-    /// </summary>
-    private bool jumpInput;
-    /// <summary>
-    /// 抓取输入
-    /// </summary>
-    private bool grabInput;
     /// <summary>
     /// 是否在地面
     /// </summary>
-    private bool isGrounded;
+    protected bool isGrounded;
     /// <summary>
     /// 是否接触墙壁
     /// </summary>
-    private bool isTouchingWall;
+    protected bool isTouchingWall;
+    /// <summary>
+    /// 抓取输入
+    /// </summary>
+    protected bool grabInput;
+    /// <summary>
+    /// X轴输入
+    /// </summary>
+    protected int xInput;
+    /// <summary>
+    /// Y轴输入
+    /// </summary>
+    protected int yInput;
 
-    public PlayerGroundedState(Player player, PlayerStateMachine stateMachine, PlayerData playerData, string animBoolName) : base(player, stateMachine, playerData, animBoolName)
+    public PlayerToucingWallState(Player player, PlayerStateMachine stateMachine, PlayerData playerData, string animBoolName) : base(player, stateMachine, playerData, animBoolName)
     {
+    }
 
+    public override void AnimationFinishTrigger()
+    {
+        base.AnimationFinishTrigger();
+    }
+
+    public override void AnimationTrigger()
+    {
+        base.AnimationTrigger();
     }
 
     public override void DoChecks()
@@ -45,8 +53,6 @@ public class PlayerGroundedState : PlayerState
     public override void Enter()
     {
         base.Enter();
-
-        player.JumpState.ResetAmountOfJumpsLeft();
     }
 
     public override void Exit()
@@ -59,22 +65,16 @@ public class PlayerGroundedState : PlayerState
         base.LogicUpdate();
 
         xInput = player.InputHandler.NormInputX;
-        jumpInput = player.InputHandler.JumpInput;
+        yInput = player.InputHandler.NormInputY;
         grabInput = player.InputHandler.GrabInput;
 
-        if (jumpInput && player.JumpState.CanJump())
+        if (isGrounded && !grabInput)
         {
-            player.InputHandler.UseJumpInput();
-            stateMachine.ChangeState(player.JumpState);
+            stateMachine.ChangeState(player.IdleState);
         }
-        else if (!isGrounded)
+        else if (!isTouchingWall || (xInput != player.FacingDirection && !grabInput))
         {
-            player.InAirState.StartCoyoteTime();
             stateMachine.ChangeState(player.InAirState);
-        }
-        else if (isTouchingWall && grabInput)
-        {
-            stateMachine.ChangeState(player.WallGrabState);
         }
     }
 

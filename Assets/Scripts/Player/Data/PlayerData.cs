@@ -35,10 +35,26 @@ public class PlayerData : ScriptableObject
     public float variableJumpHeightMultiplier = 0.5f;
 
     /// <summary>
+    /// 滑墙速度
+    /// </summary>
+    [Header("Wall Slide State")]
+    public float wallSlideVelocity = 3f;
+
+    /// <summary>
+    /// 爬墙速度
+    /// </summary>
+    [Header("Wall Climb State")]
+    public float wallClimbVelocity = 3f;
+
+    /// <summary>
     /// 地面检查范围
     /// </summary>
     [Header("Check Variables")]
     public float groundCheckRadius = 0.3f;
+    /// <summary>
+    /// 墙壁检查距离
+    /// </summary>
+    public float wallCheckDistance = 0.5f;
     /// <summary>
     /// 地面图层蒙版
     /// </summary>
