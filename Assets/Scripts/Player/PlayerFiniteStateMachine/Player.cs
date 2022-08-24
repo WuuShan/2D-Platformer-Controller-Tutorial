@@ -33,6 +33,27 @@ public class Player : MonoBehaviour
     /// 落地状态
     /// </summary>
     public PlayerLandState LandState { get; private set; }
+    /// <summary>
+    /// 滑墙状态
+    /// </summary>
+    public PlayerWallSlideState WallSlideState { get; private set; }
+    /// <summary>
+    /// 抓墙状态
+    /// </summary>
+    public PlayerWallGrabState WallGrabState { get; private set; }
+    /// <summary>
+    /// 爬墙状态
+    /// </summary>
+    public PlayerWallClimbState WallClimbState { get; private set; }
+    /// <summary>
+    /// 跳墙状态
+    /// </summary>
+    public PlayerWallJumpState WallJumpState { get; private set; }
+    /// <summary>
+    /// 平台攀爬状态
+    /// </summary>
+    public PlayerLedgeClimbState LedgeClimbState { get; private set; }
+
 
     /// <summary>
     /// 玩家数据
@@ -55,6 +76,14 @@ public class Player : MonoBehaviour
     /// 地面检查坐标
     /// </summary>
     [SerializeField] private Transform groundCheck;
+    /// <summary>
+    /// 墙壁检查坐标
+    /// </summary>
+    [SerializeField] private Transform wallCheck;
+    /// <summary>
+    /// 平台检查坐标
+    /// </summary>
+    [SerializeField] private Transform ledgeCheck;
 
     #endregion
 
@@ -84,6 +113,11 @@ public class Player : MonoBehaviour
         JumpState = new PlayerJumpState(this, StateMachine, playerData, "inAir");
         InAirState = new PlayerInAirState(this, StateMachine, playerData, "inAir");
         LandState = new PlayerLandState(this, StateMachine, playerData, "land");
+        WallSlideState = new PlayerWallSlideState(this, StateMachine, playerData, "wallSlide");
+        WallGrabState = new PlayerWallGrabState(this, StateMachine, playerData, "wallGrab");
+        WallClimbState = new PlayerWallClimbState(this, StateMachine, playerData, "wallClimb");
+        WallJumpState = new PlayerWallJumpState(this, StateMachine, playerData, "inAir");
+        LedgeClimbState = new PlayerLedgeClimbState(this, StateMachine, playerData, "ledgeClimbState");
     }
 
     private void Start()
@@ -110,10 +144,34 @@ public class Player : MonoBehaviour
     #endregion
 
     #region Set Functions 设置函数
+
     /// <summary>
-    /// 根据移动速度设置X轴位移
+    /// 设置速度为零
     /// </summary>
-    /// <param name="velocity">移动速度</param>
+    public void SetVelocityZero()
+    {
+        RB.velocity = Vector2.zero;
+        CurrentVelocity = Vector2.zero;
+    }
+
+    /// <summary>
+    /// 设置矢量
+    /// </summary>
+    /// <param name="velocity">速度</param>
+    /// <param name="angle">角度</param>
+    /// <param name="direction">方向</param>
+    public void SetVelocity(float velocity, Vector2 angle, int direction)
+    {
+        angle.Normalize();
+        workspace.Set(angle.x * velocity * direction, angle.y * velocity);
+        RB.velocity = workspace;
+        CurrentVelocity = workspace;
+    }
+
+    /// <summary>
+    /// 根据速度设置X轴移动
+    /// </summary>
+    /// <param name="velocity">速度</param>
     public void SetVelocityX(float velocity)
     {
         workspace.Set(velocity, CurrentVelocity.y);
@@ -122,9 +180,9 @@ public class Player : MonoBehaviour
     }
 
     /// <summary>
-    /// 根据跳跃速度设置Y轴位移
+    /// 根据速度设置Y轴移动
     /// </summary>
-    /// <param name="velocity">跳跃速度</param>
+    /// <param name="velocity">速度</param>
     public void SetVelocityY(float velocity)
     {
         workspace.Set(CurrentVelocity.x, velocity);
@@ -145,6 +203,33 @@ public class Player : MonoBehaviour
     }
 
     /// <summary>
+    /// 检查是否接触墙壁
+    /// </summary>
+    /// <returns></returns>
+    public bool CheckIfTouchingWall()
+    {
+        return Physics2D.Raycast(wallCheck.position, Vector2.right * FacingDirection, playerData.wallCheckDistance, playerData.whatIsGround);
+    }
+
+    /// <summary>
+    /// 检查是否接触平台
+    /// </summary>
+    /// <returns></returns>
+    public bool CheckIfTouchingLedge()
+    {
+        return Physics2D.Raycast(ledgeCheck.position, Vector2.right * FacingDirection, playerData.wallCheckDistance, playerData.whatIsGround);
+    }
+
+    /// <summary>
+    /// 检查身后是否接触墙壁
+    /// </summary>
+    /// <returns></returns>
+    public bool CheckIfTouchingWallBack()
+    {
+        return Physics2D.Raycast(wallCheck.position, Vector2.right * -FacingDirection, playerData.wallCheckDistance, playerData.whatIsGround);
+    }
+
+    /// <summary>
     /// 根据X轴输入检查是否要翻转
     /// </summary>
     /// <param name="xInput">横轴输入</param>
@@ -159,6 +244,22 @@ public class Player : MonoBehaviour
     #endregion
 
     #region Other Functions 其他函数
+
+    /// <summary>
+    /// 确定玩家平台攀爬后到达的内角位置
+    /// </summary>
+    /// <returns>内角位置</returns>
+    public Vector2 DetermineCornerPosition()
+    {
+        RaycastHit2D xHit = Physics2D.Raycast(wallCheck.position, Vector2.right * FacingDirection, playerData.wallCheckDistance, playerData.whatIsGround);
+        float xDist = xHit.distance;
+        workspace.Set(xDist * FacingDirection, 0f);
+        RaycastHit2D yHit = Physics2D.Raycast(ledgeCheck.position + (Vector3)(workspace), Vector2.down, ledgeCheck.position.y - wallCheck.position.y, playerData.whatIsGround);
+        float yDist = yHit.distance;
+
+        workspace.Set(wallCheck.position.x + (xDist * FacingDirection), ledgeCheck.position.y - yDist);
+        return workspace;
+    }
 
     /// <summary>
     /// 动画触发

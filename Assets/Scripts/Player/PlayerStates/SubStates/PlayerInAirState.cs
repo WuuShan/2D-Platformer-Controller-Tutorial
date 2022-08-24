@@ -16,6 +16,22 @@ public class PlayerInAirState : PlayerState
     /// </summary>
     private bool isGrounded;
     /// <summary>
+    /// 是否接触墙壁
+    /// </summary>
+    private bool isTouchingWall;
+    /// <summary>
+    /// 身后是否接触墙壁
+    /// </summary>
+    private bool isTouchingWallBack;
+    /// <summary>
+    /// 上一帧是否接触墙壁
+    /// </summary>
+    private bool oldIsTouchingWall;
+    /// <summary>
+    /// 上一帧身后是否接触墙壁
+    /// </summary>
+    private bool oldIsTouchingWallBack;
+    /// <summary>
     /// 跳跃输入
     /// </summary>
     private bool jumpInput;
@@ -28,9 +44,26 @@ public class PlayerInAirState : PlayerState
     /// </summary>
     private bool coyoteTime;
     /// <summary>
+    /// 跳墙土狼时间
+    /// </summary>
+    private bool wallJumpCoyoteTime;
+    /// <summary>
     /// 是否在跳跃
     /// </summary>
     private bool isJumping;
+    /// <summary>
+    /// 抓取输入
+    /// </summary>
+    private bool grabInput;
+    /// <summary>
+    /// 是否接触平台
+    /// </summary>
+    private bool isTouchingLedge;
+
+    /// <summary>
+    /// 开始跳墙土狼时间
+    /// </summary>
+    private float startWallJumpCoyoteTime;
 
     public PlayerInAirState(Player player, PlayerStateMachine stateMachine, PlayerData playerData, string animBoolName) : base(player, stateMachine, playerData, animBoolName)
     {
@@ -40,7 +73,23 @@ public class PlayerInAirState : PlayerState
     {
         base.DoChecks();
 
+        oldIsTouchingWall = isTouchingWall;
+        oldIsTouchingWallBack = isTouchingWallBack;
+
         isGrounded = player.CheckIfGrounded();
+        isTouchingWall = player.CheckIfTouchingWall();
+        isTouchingWallBack = player.CheckIfTouchingWallBack();
+        isTouchingLedge = player.CheckIfTouchingLedge();
+
+        if (isTouchingWall && !isTouchingLedge)
+        {
+            player.LedgeClimbState.SetDetectedPosition(player.transform.position);
+        }
+
+        if (!wallJumpCoyoteTime && !isTouchingWall && !isTouchingWallBack && (oldIsTouchingWall || oldIsTouchingWallBack))
+        {
+            StartWallJumpCoyoteTime();
+        }
     }
 
     public override void Enter()
@@ -51,6 +100,11 @@ public class PlayerInAirState : PlayerState
     public override void Exit()
     {
         base.Exit();
+
+        oldIsTouchingWall = false;
+        oldIsTouchingWallBack = false;
+        isTouchingWall = false;
+        isTouchingWallBack = false;
     }
 
     public override void LogicUpdate()
@@ -58,10 +112,12 @@ public class PlayerInAirState : PlayerState
         base.LogicUpdate();
 
         CheckCoyoteTime();
+        CheckWallJumpCoyoteTime();
 
         xInput = player.InputHandler.NormInputX;
         jumpInput = player.InputHandler.JumpInput;
         jumpInputStop = player.InputHandler.JumpInputStop;
+        grabInput = player.InputHandler.GrabInput;
 
         CheckJumpMultiplier();
 
@@ -69,9 +125,28 @@ public class PlayerInAirState : PlayerState
         {
             stateMachine.ChangeState(player.LandState);
         }
+        else if (isTouchingWall && !isTouchingLedge)
+        {
+            stateMachine.ChangeState(player.LedgeClimbState);
+        }
+        else if (jumpInput && (isTouchingWall || isTouchingWallBack || wallJumpCoyoteTime))
+        {
+            StopWallJumpCoyoteTime();
+            isTouchingWall = player.CheckIfTouchingWall();
+            player.WallJumpState.DetermineWallJumpDirection(isTouchingWall);
+            stateMachine.ChangeState(player.WallJumpState);
+        }
         else if (jumpInput && player.JumpState.CanJump())
         {
             stateMachine.ChangeState(player.JumpState);
+        }
+        else if (isTouchingWall && grabInput)
+        {
+            stateMachine.ChangeState(player.WallGrabState);
+        }
+        else if (isTouchingWall && xInput == player.FacingDirection && player.CurrentVelocity.y <= 0)
+        {
+            stateMachine.ChangeState(player.WallSlideState);
         }
         else
         {
@@ -120,9 +195,34 @@ public class PlayerInAirState : PlayerState
     }
 
     /// <summary>
+    /// 检查跳墙土狼时间
+    /// </summary>
+    private void CheckWallJumpCoyoteTime()
+    {
+        if (wallJumpCoyoteTime && Time.time > startWallJumpCoyoteTime + playerData.coyoteTime)
+        {
+            wallJumpCoyoteTime = false;
+        }
+    }
+
+    /// <summary>
     /// 开始土狼时间
     /// </summary>
     public void StartCoyoteTime() => coyoteTime = true;
+
+    /// <summary>
+    /// 开始跳墙土狼时间
+    /// </summary>
+    public void StartWallJumpCoyoteTime()
+    {
+        wallJumpCoyoteTime = true;
+        startWallJumpCoyoteTime = Time.time;
+    }
+
+    /// <summary>
+    /// 停止跳墙土狼时间
+    /// </summary>
+    public void StopWallJumpCoyoteTime() => wallJumpCoyoteTime = false;
 
     /// <summary>
     /// 设置在跳跃

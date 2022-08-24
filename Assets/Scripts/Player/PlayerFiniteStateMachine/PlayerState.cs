@@ -24,6 +24,10 @@ public class PlayerState
     /// 动画是否结束
     /// </summary>
     protected bool isAnimationFinished;
+    /// <summary>
+    /// 是否在退出状态
+    /// </summary>
+    protected bool isExitingState;
 
     /// <summary>
     /// 开始时间
@@ -52,6 +56,7 @@ public class PlayerState
         player.Anim.SetBool(animBoolName, true);
         startTime = Time.time;
         isAnimationFinished = false;
+        isExitingState = false;
     }
 
     /// <summary>
@@ -60,6 +65,7 @@ public class PlayerState
     public virtual void Exit()
     {
         player.Anim.SetBool(animBoolName, false);
+        isExitingState = true;
     }
 
     /// <summary>

@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// 玩家技能状态
+/// 玩家能力状态
 /// </summary>
 public class PlayerAbilityState : PlayerState
 {
     /// <summary>
-    /// 技能是否完成
+    /// 能力是否完成
     /// </summary>
     protected bool isAbilityDone;
 
