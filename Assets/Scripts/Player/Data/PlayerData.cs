@@ -25,6 +25,20 @@ public class PlayerData : ScriptableObject
     public int amountOfJumps = 1;
 
     /// <summary>
+    /// 跳墙速度
+    /// </summary>
+    [Header("Wall Jump State")]
+    public float wallJumpVelocity = 20;
+    /// <summary>
+    /// 跳墙时间
+    /// </summary>
+    public float wallJumpTime = 0.4f;
+    /// <summary>
+    /// 跳墙角度
+    /// </summary>
+    public Vector2 wallJumpAngle = new Vector2(1, 2);
+
+    /// <summary>
     /// 土狼时间
     /// </summary>
     [Header("In Air State")]
@@ -45,6 +59,16 @@ public class PlayerData : ScriptableObject
     /// </summary>
     [Header("Wall Climb State")]
     public float wallClimbVelocity = 3f;
+
+    /// <summary>
+    /// 起始偏移量
+    /// </summary>
+    [Header("Ledge Climb State")]
+    public Vector2 startOffset;
+    /// <summary>
+    /// 停下偏移量
+    /// </summary>
+    public Vector2 stopOffset;
 
     /// <summary>
     /// 地面检查范围
