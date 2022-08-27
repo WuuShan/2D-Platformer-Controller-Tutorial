@@ -8,9 +8,18 @@ using UnityEngine;
 public class PlayerGroundedState : PlayerState
 {
     /// <summary>
-    /// 横轴输入
+    /// X轴输入
     /// </summary>
     protected int xInput;
+    /// <summary>
+    /// Y轴输入
+    /// </summary>
+    protected int yInput;
+
+    /// <summary>
+    /// 是否接触天花板
+    /// </summary>
+    protected bool isTouchingCeiling;
 
     /// <summary>
     /// 跳跃输入
@@ -28,6 +37,14 @@ public class PlayerGroundedState : PlayerState
     /// 是否接触墙壁
     /// </summary>
     private bool isTouchingWall;
+    /// <summary>
+    /// 是否接触平台
+    /// </summary>
+    private bool isTouchingLedge;
+    /// <summary>
+    /// 冲刺输入
+    /// </summary>
+    private bool dashInput;
 
     public PlayerGroundedState(Player player, PlayerStateMachine stateMachine, PlayerData playerData, string animBoolName) : base(player, stateMachine, playerData, animBoolName)
     {
@@ -40,6 +57,8 @@ public class PlayerGroundedState : PlayerState
 
         isGrounded = player.CheckIfGrounded();
         isTouchingWall = player.CheckIfTouchingWall();
+        isTouchingLedge = player.CheckIfTouchingLedge();
+        isTouchingCeiling = player.CheckForCeiling();
     }
 
     public override void Enter()
@@ -47,6 +66,7 @@ public class PlayerGroundedState : PlayerState
         base.Enter();
 
         player.JumpState.ResetAmountOfJumpsLeft();
+        player.DashState.ResetCanDash();
     }
 
     public override void Exit()
@@ -59,10 +79,12 @@ public class PlayerGroundedState : PlayerState
         base.LogicUpdate();
 
         xInput = player.InputHandler.NormInputX;
+        yInput = player.InputHandler.NormInputY;
         jumpInput = player.InputHandler.JumpInput;
         grabInput = player.InputHandler.GrabInput;
+        dashInput = player.InputHandler.DashInput;
 
-        if (jumpInput && player.JumpState.CanJump())
+        if (jumpInput && player.JumpState.CanJump() && !isTouchingCeiling)//TODO:在天花板下不能跳跃
         {
             stateMachine.ChangeState(player.JumpState);
         }
@@ -71,9 +93,13 @@ public class PlayerGroundedState : PlayerState
             player.InAirState.StartCoyoteTime();
             stateMachine.ChangeState(player.InAirState);
         }
-        else if (isTouchingWall && grabInput)
+        else if (isTouchingWall && grabInput && isTouchingLedge)
         {
             stateMachine.ChangeState(player.WallGrabState);
+        }
+        else if (dashInput && player.DashState.CheckIfCanDash() && !isTouchingCeiling)
+        {
+            stateMachine.ChangeState(player.DashState);
         }
     }
 
