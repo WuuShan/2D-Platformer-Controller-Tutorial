@@ -53,6 +53,18 @@ public class Player : MonoBehaviour
     /// 平台攀爬状态
     /// </summary>
     public PlayerLedgeClimbState LedgeClimbState { get; private set; }
+    /// <summary>
+    /// 冲刺状态
+    /// </summary>
+    public PlayerDashState DashState { get; private set; }
+    /// <summary>
+    /// 蹲伏待机状态
+    /// </summary>
+    public PlayerCrouchIdleState CrouchIdleState { get; private set; }
+    /// <summary>
+    /// 蹲伏移动状态
+    /// </summary>
+    public PlayerCrouchMoveState CrouchMoveState { get; private set; }
 
 
     /// <summary>
@@ -68,6 +80,12 @@ public class Player : MonoBehaviour
     /// </summary>
     public PlayerInputHandler InputHandler { get; private set; }
     public Rigidbody2D RB { get; private set; }
+    /// <summary>
+    /// 冲刺方向指示器坐标
+    /// </summary>
+    public Transform DashDirectionIndicator { get; private set; }
+    public BoxCollider2D MovementCollider { get; private set; }
+
     #endregion
 
     #region Check Transforms 检查坐标
@@ -84,6 +102,10 @@ public class Player : MonoBehaviour
     /// 平台检查坐标
     /// </summary>
     [SerializeField] private Transform ledgeCheck;
+    /// <summary>
+    /// 天花板检查坐标
+    /// </summary>
+    [SerializeField] private Transform CeilingCheck;
 
     #endregion
 
@@ -118,6 +140,9 @@ public class Player : MonoBehaviour
         WallClimbState = new PlayerWallClimbState(this, StateMachine, playerData, "wallClimb");
         WallJumpState = new PlayerWallJumpState(this, StateMachine, playerData, "inAir");
         LedgeClimbState = new PlayerLedgeClimbState(this, StateMachine, playerData, "ledgeClimbState");
+        DashState = new PlayerDashState(this, StateMachine, playerData, "inAir");
+        CrouchIdleState = new PlayerCrouchIdleState(this, StateMachine, playerData, "crouchIdle");
+        CrouchMoveState = new PlayerCrouchMoveState(this, StateMachine, playerData, "crouchMove");
     }
 
     private void Start()
@@ -125,6 +150,8 @@ public class Player : MonoBehaviour
         Anim = GetComponent<Animator>();
         InputHandler = GetComponent<PlayerInputHandler>();
         RB = GetComponent<Rigidbody2D>();
+        DashDirectionIndicator = transform.Find("DashDirectionIndicator");
+        MovementCollider = GetComponent<BoxCollider2D>();
 
         FacingDirection = 1;
 
@@ -169,6 +196,18 @@ public class Player : MonoBehaviour
     }
 
     /// <summary>
+    /// 根据向量和速度设置矢量
+    /// </summary>
+    /// <param name="velocity">速度</param>
+    /// <param name="direction">向量</param>
+    public void SetVelocity(float velocity, Vector2 direction)
+    {
+        workspace = direction * velocity;
+        RB.velocity = workspace;
+        CurrentVelocity = workspace;
+    }
+
+    /// <summary>
     /// 根据速度设置X轴移动
     /// </summary>
     /// <param name="velocity">速度</param>
@@ -192,6 +231,15 @@ public class Player : MonoBehaviour
     #endregion
 
     #region Check Functions 检查函数
+
+    /// <summary>
+    /// 检查天花板
+    /// </summary>
+    /// <returns></returns>
+    public bool CheckForCeiling()
+    {
+        return Physics2D.OverlapCircle(CeilingCheck.position, playerData.groundCheckRadius, playerData.whatIsGround);
+    }
 
     /// <summary>
     /// 检查是否在地面
@@ -245,6 +293,17 @@ public class Player : MonoBehaviour
 
     #region Other Functions 其他函数
 
+    public void SetColliderHeight(float height)
+    {
+        Vector2 center = MovementCollider.offset;
+        workspace.Set(MovementCollider.size.x, height);
+
+        center.y += (height - MovementCollider.size.y) / 2;
+
+        MovementCollider.size = workspace;
+        MovementCollider.offset = center;
+    }
+
     /// <summary>
     /// 确定玩家平台攀爬后到达的内角位置
     /// </summary>
@@ -253,8 +312,8 @@ public class Player : MonoBehaviour
     {
         RaycastHit2D xHit = Physics2D.Raycast(wallCheck.position, Vector2.right * FacingDirection, playerData.wallCheckDistance, playerData.whatIsGround);
         float xDist = xHit.distance;
-        workspace.Set(xDist * FacingDirection, 0f);
-        RaycastHit2D yHit = Physics2D.Raycast(ledgeCheck.position + (Vector3)(workspace), Vector2.down, ledgeCheck.position.y - wallCheck.position.y, playerData.whatIsGround);
+        workspace.Set((xDist + 0.015f) * FacingDirection, 0f);
+        RaycastHit2D yHit = Physics2D.Raycast(ledgeCheck.position + (Vector3)(workspace), Vector2.down, ledgeCheck.position.y - wallCheck.position.y + 0.015f, playerData.whatIsGround);
         float yDist = yHit.distance;
 
         workspace.Set(wallCheck.position.x + (xDist * FacingDirection), ledgeCheck.position.y - yDist);

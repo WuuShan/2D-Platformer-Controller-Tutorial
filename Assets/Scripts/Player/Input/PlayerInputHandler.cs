@@ -8,10 +8,21 @@ using UnityEngine.InputSystem;
 /// </summary>
 public class PlayerInputHandler : MonoBehaviour
 {
+    private PlayerInput playerInput;
+    private Camera cam;
+
     /// <summary>
     /// 原始移动输入
     /// </summary>
     public Vector2 RawMovementInput { get; private set; }
+    /// <summary>
+    /// 原始冲刺方向输入
+    /// </summary>
+    public Vector2 RawDashDirectionInput { get; private set; }
+    /// <summary>
+    /// 冲刺方向输入
+    /// </summary>
+    public Vector2Int DashDirectionInput { get; private set; }
     /// <summary>
     /// 标准化输入X
     /// </summary>
@@ -32,9 +43,17 @@ public class PlayerInputHandler : MonoBehaviour
     /// 抓取输入
     /// </summary>
     public bool GrabInput { get; private set; }
+    /// <summary>
+    /// 冲刺输入
+    /// </summary>
+    public bool DashInput { get; private set; }
+    /// <summary>
+    /// 冲刺输入停止
+    /// </summary>
+    public bool DashInputStop { get; private set; }
 
     /// <summary>
-    /// 输入保持时间
+    /// 预输入时间
     /// </summary>
     [SerializeField] private float inputHoldTime = 0.2f;
 
@@ -42,10 +61,21 @@ public class PlayerInputHandler : MonoBehaviour
     /// 跳跃输入开始时间
     /// </summary>
     private float jumpInputStartTime;
+    /// <summary>
+    /// 冲刺输入开始时间
+    /// </summary>
+    private float dashInputStartTime;
+
+    private void Start()
+    {
+        playerInput = GetComponent<PlayerInput>();
+        cam = Camera.main;
+    }
 
     private void Update()
     {
         CheckJumpInputHoldTime();
+        CheckDashInputHoldTime();
     }
 
     /// <summary>
@@ -114,18 +144,68 @@ public class PlayerInputHandler : MonoBehaviour
     }
 
     /// <summary>
+    /// 注册冲刺输入
+    /// </summary>
+    /// <param name="context"></param>
+    public void OnDashInput(InputAction.CallbackContext context)
+    {
+        if (context.started)
+        {
+            DashInput = true;
+            DashInputStop = false;
+            dashInputStartTime = Time.time;
+        }
+        else if (context.canceled)
+        {
+            DashInputStop = true;
+        }
+    }
+
+    /// <summary>
+    /// 注册冲刺方向输入
+    /// </summary>
+    /// <param name="context"></param>
+    public void OnDashIDirectionnput(InputAction.CallbackContext context)
+    {
+        RawDashDirectionInput = context.ReadValue<Vector2>();
+
+        if (playerInput.currentControlScheme == "Keyboard")
+        {
+            RawDashDirectionInput = cam.ScreenToWorldPoint((Vector3)RawDashDirectionInput) - transform.position;
+        }
+
+        DashDirectionInput = Vector2Int.RoundToInt(RawDashDirectionInput.normalized);
+    }
+
+    /// <summary>
     /// 使用跳跃输入
     /// </summary>
     public void UseJumpInput() => JumpInput = false;
 
     /// <summary>
-    /// 检查跳跃输入保存时间
+    /// 使用冲刺输入
+    /// </summary>
+    public void UseDashInput() => DashInput = false;
+
+    /// <summary>
+    /// 检查跳跃预输入时间
     /// </summary>
     private void CheckJumpInputHoldTime()
     {
         if (Time.time >= jumpInputStartTime + inputHoldTime)
         {
             JumpInput = false;
+        }
+    }
+
+    /// <summary>
+    /// 检查冲刺预输入时间
+    /// </summary>
+    private void CheckDashInputHoldTime()
+    {
+        if (Time.time >= dashInputStartTime + inputHoldTime)
+        {
+            DashInput = false;
         }
     }
 }

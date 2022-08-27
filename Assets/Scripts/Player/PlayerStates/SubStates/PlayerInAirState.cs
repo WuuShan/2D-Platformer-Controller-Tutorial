@@ -7,10 +7,29 @@ using UnityEngine;
 /// </summary>
 public class PlayerInAirState : PlayerState
 {
+    // Input
     /// <summary>
     /// X轴输入
     /// </summary>
     private int xInput;
+    /// <summary>
+    /// 跳跃输入
+    /// </summary>
+    private bool jumpInput;
+    /// <summary>
+    /// 跳跃输入停止
+    /// </summary>
+    private bool jumpInputStop;
+    /// <summary>
+    /// 抓取输入
+    /// </summary>
+    private bool grabInput;
+    /// <summary>
+    /// 冲刺输入
+    /// </summary>
+    private bool dashInput;
+
+    // Checks
     /// <summary>
     /// 是否在地面
     /// </summary>
@@ -32,14 +51,6 @@ public class PlayerInAirState : PlayerState
     /// </summary>
     private bool oldIsTouchingWallBack;
     /// <summary>
-    /// 跳跃输入
-    /// </summary>
-    private bool jumpInput;
-    /// <summary>
-    /// 跳跃输入停止
-    /// </summary>
-    private bool jumpInputStop;
-    /// <summary>
     /// 土狼时间
     /// </summary>
     private bool coyoteTime;
@@ -51,10 +62,6 @@ public class PlayerInAirState : PlayerState
     /// 是否在跳跃
     /// </summary>
     private bool isJumping;
-    /// <summary>
-    /// 抓取输入
-    /// </summary>
-    private bool grabInput;
     /// <summary>
     /// 是否接触平台
     /// </summary>
@@ -80,6 +87,7 @@ public class PlayerInAirState : PlayerState
         isTouchingWall = player.CheckIfTouchingWall();
         isTouchingWallBack = player.CheckIfTouchingWallBack();
         isTouchingLedge = player.CheckIfTouchingLedge();
+
 
         if (isTouchingWall && !isTouchingLedge)
         {
@@ -118,6 +126,7 @@ public class PlayerInAirState : PlayerState
         jumpInput = player.InputHandler.JumpInput;
         jumpInputStop = player.InputHandler.JumpInputStop;
         grabInput = player.InputHandler.GrabInput;
+        dashInput = player.InputHandler.DashInput;
 
         CheckJumpMultiplier();
 
@@ -125,7 +134,7 @@ public class PlayerInAirState : PlayerState
         {
             stateMachine.ChangeState(player.LandState);
         }
-        else if (isTouchingWall && !isTouchingLedge)
+        else if (isTouchingWall && !isTouchingLedge && !isGrounded)
         {
             stateMachine.ChangeState(player.LedgeClimbState);
         }
@@ -140,13 +149,17 @@ public class PlayerInAirState : PlayerState
         {
             stateMachine.ChangeState(player.JumpState);
         }
-        else if (isTouchingWall && grabInput)
+        else if (isTouchingWall && grabInput && isTouchingLedge)
         {
             stateMachine.ChangeState(player.WallGrabState);
         }
         else if (isTouchingWall && xInput == player.FacingDirection && player.CurrentVelocity.y <= 0)
         {
             stateMachine.ChangeState(player.WallSlideState);
+        }
+        else if (dashInput && player.DashState.CheckIfCanDash())
+        {
+            stateMachine.ChangeState(player.DashState);
         }
         else
         {
