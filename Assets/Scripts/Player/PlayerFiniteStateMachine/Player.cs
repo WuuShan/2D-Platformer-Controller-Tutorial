@@ -65,6 +65,14 @@ public class Player : MonoBehaviour
     /// 蹲伏移动状态
     /// </summary>
     public PlayerCrouchMoveState CrouchMoveState { get; private set; }
+    /// <summary>
+    /// 主要攻击状态
+    /// </summary>
+    public PlayerAttackState PrimaryAttackState { get; private set; }
+    /// <summary>
+    /// 次要攻击状态
+    /// </summary>
+    public PlayerAttackState SecondaryAttackState { get; private set; }
 
 
     /// <summary>
@@ -85,6 +93,7 @@ public class Player : MonoBehaviour
     /// </summary>
     public Transform DashDirectionIndicator { get; private set; }
     public BoxCollider2D MovementCollider { get; private set; }
+    public PlayerInventory Inventory { get; private set; }
 
     #endregion
 
@@ -143,6 +152,8 @@ public class Player : MonoBehaviour
         DashState = new PlayerDashState(this, StateMachine, playerData, "inAir");
         CrouchIdleState = new PlayerCrouchIdleState(this, StateMachine, playerData, "crouchIdle");
         CrouchMoveState = new PlayerCrouchMoveState(this, StateMachine, playerData, "crouchMove");
+        PrimaryAttackState = new PlayerAttackState(this, StateMachine, playerData, "attack");
+        SecondaryAttackState = new PlayerAttackState(this, StateMachine, playerData, "attack");
     }
 
     private void Start()
@@ -152,8 +163,12 @@ public class Player : MonoBehaviour
         RB = GetComponent<Rigidbody2D>();
         DashDirectionIndicator = transform.Find("DashDirectionIndicator");
         MovementCollider = GetComponent<BoxCollider2D>();
+        Inventory = GetComponent<PlayerInventory>();
 
         FacingDirection = 1;
+
+        PrimaryAttackState.SetWeapon(Inventory.weapons[(int)CombatInputs.primary]);
+        //SecondaryAttackState.SetWeapon(Inventory.weapons[(int)CombatInputs.primary]);
 
         StateMachine.Initialize(IdleState);
     }

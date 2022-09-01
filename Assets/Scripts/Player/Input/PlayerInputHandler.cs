@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -53,6 +54,11 @@ public class PlayerInputHandler : MonoBehaviour
     public bool DashInputStop { get; private set; }
 
     /// <summary>
+    /// 攻击输入
+    /// </summary>
+    public bool[] attackInputs { get; private set; }
+
+    /// <summary>
     /// 预输入时间
     /// </summary>
     [SerializeField] private float inputHoldTime = 0.2f;
@@ -69,6 +75,10 @@ public class PlayerInputHandler : MonoBehaviour
     private void Start()
     {
         playerInput = GetComponent<PlayerInput>();
+
+        int count = Enum.GetValues(typeof(CombatInputs)).Length;
+        attackInputs = new bool[count];
+
         cam = Camera.main;
     }
 
@@ -79,6 +89,40 @@ public class PlayerInputHandler : MonoBehaviour
     }
 
     /// <summary>
+    /// 注册主要攻击输入
+    /// </summary>
+    /// <param name="context"></param>
+    public void OnPrimaryAttackInput(InputAction.CallbackContext context)
+    {
+        if (context.started)
+        {
+            attackInputs[(int)CombatInputs.primary] = true;
+        }
+
+        if (context.canceled)
+        {
+            attackInputs[(int)CombatInputs.primary] = false;
+        }
+    }
+
+    /// <summary>
+    /// 注册次要攻击输入
+    /// </summary>
+    /// <param name="context"></param>
+    public void OnSecondaryAttackInput(InputAction.CallbackContext context)
+    {
+        if (context.started)
+        {
+            attackInputs[(int)CombatInputs.secondary] = true;
+        }
+
+        if (context.canceled)
+        {
+            attackInputs[(int)CombatInputs.secondary] = false;
+        }
+    }
+
+    /// <summary>
     /// 注册移动输入
     /// </summary>
     /// <param name="context"></param>
@@ -86,14 +130,9 @@ public class PlayerInputHandler : MonoBehaviour
     {
         RawMovementInput = context.ReadValue<Vector2>();
 
-        if (Mathf.Abs(RawMovementInput.x) > 0.5f)
-        {
-            NormInputX = (int)(RawMovementInput * Vector2.right).normalized.x;
-        }
-        else
-        {
-            NormInputX = 0;
-        }
+        NormInputX = Mathf.RoundToInt(RawMovementInput.x);
+
+        NormInputY = Mathf.RoundToInt(RawMovementInput.y);
 
         if (Mathf.Abs(RawMovementInput.y) > 0.5f)
         {
@@ -103,8 +142,6 @@ public class PlayerInputHandler : MonoBehaviour
         {
             NormInputY = 0;
         }
-
-
     }
 
     /// <summary>
@@ -208,4 +245,19 @@ public class PlayerInputHandler : MonoBehaviour
             DashInput = false;
         }
     }
+}
+
+/// <summary>
+/// 战斗输入
+/// </summary>
+public enum CombatInputs
+{
+    /// <summary>
+    /// 主要
+    /// </summary>
+    primary,
+    /// <summary>
+    /// 次要
+    /// </summary>
+    secondary
 }
