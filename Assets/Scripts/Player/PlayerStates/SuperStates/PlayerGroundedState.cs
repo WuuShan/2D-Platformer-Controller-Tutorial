@@ -84,7 +84,15 @@ public class PlayerGroundedState : PlayerState
         grabInput = player.InputHandler.GrabInput;
         dashInput = player.InputHandler.DashInput;
 
-        if (jumpInput && player.JumpState.CanJump() && !isTouchingCeiling)//TODO:在天花板下不能跳跃
+        if (player.InputHandler.attackInputs[(int)CombatInputs.primary] && !isTouchingCeiling)
+        {
+            stateMachine.ChangeState(player.PrimaryAttackState);
+        }
+        else if (player.InputHandler.attackInputs[(int)CombatInputs.secondary] && !isTouchingCeiling)
+        {
+            stateMachine.ChangeState(player.SecondaryAttackState);
+        }
+        else if (jumpInput && player.JumpState.CanJump() && !isTouchingCeiling)//TODO:在天花板下不能跳跃
         {
             stateMachine.ChangeState(player.JumpState);
         }
