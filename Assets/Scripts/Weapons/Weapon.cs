@@ -7,10 +7,20 @@ using UnityEngine;
 /// </summary>
 public class Weapon : MonoBehaviour
 {
+    /// <summary>
+    /// 武器数据
+    /// </summary>
+    [SerializeField] private SO_WeaponData weaponData;
+
     protected Animator baseAnimator;
     protected Animator weaponAnimator;
 
     protected PlayerAttackState state;
+
+    /// <summary>
+    /// 攻击计数器
+    /// </summary>
+    protected int attackCounter;
 
     protected virtual void Start()
     {
@@ -27,8 +37,16 @@ public class Weapon : MonoBehaviour
     {
         gameObject.SetActive(true);
 
+        if (attackCounter >= weaponData.movementSpeed.Length)
+        {
+            attackCounter = 0;
+        }
+
         baseAnimator.SetBool("attack", true);
         weaponAnimator.SetBool("attack", true);
+
+        baseAnimator.SetInteger("attackCounter", attackCounter);
+        weaponAnimator.SetInteger("attackCounter", attackCounter);
     }
 
     /// <summary>
@@ -39,21 +57,10 @@ public class Weapon : MonoBehaviour
         baseAnimator.SetBool("attack", false);
         weaponAnimator.SetBool("attack", false);
 
+        attackCounter++;
+
         gameObject.SetActive(false);
     }
-
-
-    #region Animation Triggers
-
-    /// <summary>
-    /// 动画结束时触发
-    /// </summary>
-    public virtual void AnimationFinishTrigger()
-    {
-        state.AnimationFinishTrigger();
-    }
-
-    #endregion
 
     /// <summary>
     /// 初始化武器的玩家攻击状态
@@ -63,4 +70,49 @@ public class Weapon : MonoBehaviour
     {
         this.state = state;
     }
+
+    #region Animation Triggers
+
+    /// <summary>
+    /// 结束时触发
+    /// </summary>
+    public virtual void AnimationFinishTrigger()
+    {
+        state.AnimationFinishTrigger();
+    }
+
+    /// <summary>
+    /// 开始移动触发
+    /// </summary>
+    public virtual void AnimationStartMovementTrigger()
+    {
+        state.SetPlayerVelocity(weaponData.movementSpeed[attackCounter]);
+    }
+
+    /// <summary>
+    /// 停止移动触发
+    /// </summary>
+    public virtual void AnimationStopMovementTrigger()
+    {
+        state.SetPlayerVelocity(0f);
+    }
+
+    /// <summary>
+    /// 关闭翻转
+    /// </summary>
+    public virtual void AnimationTurnOffFlipTrigger()
+    {
+        state.SetFlipCheck(false);
+    }
+
+    /// <summary>
+    /// 启动翻转
+    /// </summary>
+    public virtual void AnimationTurnOnFlipTrigger()
+    {
+        state.SetFlipCheck(true);
+    }
+
+    #endregion
+
 }
