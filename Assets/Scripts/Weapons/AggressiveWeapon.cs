@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 /// <summary>
 /// 攻击性武器
@@ -45,7 +46,7 @@ public class AggressiveWeapon : Weapon
     {
         WeaponAttackDetails details = aggressiveWeaponData.AttackDetails[attackCounter];
 
-        foreach (IDamageable item in detectedDamageable)
+        foreach (IDamageable item in detectedDamageable.ToList())
         {
             item.Damage(details.damageAmount);
         }
