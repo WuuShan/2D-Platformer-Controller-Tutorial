@@ -117,18 +117,4 @@ public class PlayerData : ScriptableObject
     /// 站立碰撞器高度
     /// </summary>
     public float standColliderHeight = 1.6f;
-
-    /// <summary>
-    /// 地面检查范围
-    /// </summary>
-    [Header("Check Variables")]
-    public float groundCheckRadius = 0.3f;
-    /// <summary>
-    /// 墙壁检查距离
-    /// </summary>
-    public float wallCheckDistance = 0.5f;
-    /// <summary>
-    /// 地面图层蒙版
-    /// </summary>
-    public LayerMask whatIsGround;
 }

@@ -82,6 +82,8 @@ public class Player : MonoBehaviour
     #endregion
 
     #region Components 组件
+
+    public Core Core { get; private set; }
     public Animator Anim { get; private set; }
     /// <summary>
     /// 输入处理程序
@@ -97,36 +99,7 @@ public class Player : MonoBehaviour
 
     #endregion
 
-    #region Check Transforms 检查坐标
-
-    /// <summary>
-    /// 地面检查坐标
-    /// </summary>
-    [SerializeField] private Transform groundCheck;
-    /// <summary>
-    /// 墙壁检查坐标
-    /// </summary>
-    [SerializeField] private Transform wallCheck;
-    /// <summary>
-    /// 平台检查坐标
-    /// </summary>
-    [SerializeField] private Transform ledgeCheck;
-    /// <summary>
-    /// 天花板检查坐标
-    /// </summary>
-    [SerializeField] private Transform CeilingCheck;
-
-    #endregion
-
     #region Other Variables 其他变量
-    /// <summary>
-    /// 当前速度
-    /// </summary>
-    public Vector2 CurrentVelocity { get; private set; }
-    /// <summary>
-    /// 目前面对方向 左-1 右1
-    /// </summary>
-    public int FacingDirection { get; private set; }
 
     /// <summary>
     /// 实际移动的位移向量
@@ -137,6 +110,8 @@ public class Player : MonoBehaviour
     #region Unity Callback Functions Unity 回调函数
     private void Awake()
     {
+        Core = GetComponentInChildren<Core>();
+
         StateMachine = new PlayerStateMachine();
 
         IdleState = new PlayerIdleState(this, StateMachine, playerData, "idle");
@@ -165,8 +140,6 @@ public class Player : MonoBehaviour
         MovementCollider = GetComponent<BoxCollider2D>();
         Inventory = GetComponent<PlayerInventory>();
 
-        FacingDirection = 1;
-
         PrimaryAttackState.SetWeapon(Inventory.weapons[(int)CombatInputs.primary]);
         //SecondaryAttackState.SetWeapon(Inventory.weapons[(int)CombatInputs.primary]);
 
@@ -175,7 +148,7 @@ public class Player : MonoBehaviour
 
     private void Update()
     {
-        CurrentVelocity = RB.velocity;
+        Core.LogicUpdate();
         StateMachine.CurrentState.LogicUpdate();
     }
 
@@ -183,127 +156,6 @@ public class Player : MonoBehaviour
     {
         StateMachine.CurrentState.PhysicsUpdate();
     }
-    #endregion
-
-    #region Set Functions 设置函数
-
-    /// <summary>
-    /// 设置速度为零
-    /// </summary>
-    public void SetVelocityZero()
-    {
-        RB.velocity = Vector2.zero;
-        CurrentVelocity = Vector2.zero;
-    }
-
-    /// <summary>
-    /// 设置矢量
-    /// </summary>
-    /// <param name="velocity">速度</param>
-    /// <param name="angle">角度</param>
-    /// <param name="direction">方向</param>
-    public void SetVelocity(float velocity, Vector2 angle, int direction)
-    {
-        angle.Normalize();
-        workspace.Set(angle.x * velocity * direction, angle.y * velocity);
-        RB.velocity = workspace;
-        CurrentVelocity = workspace;
-    }
-
-    /// <summary>
-    /// 根据向量和速度设置矢量
-    /// </summary>
-    /// <param name="velocity">速度</param>
-    /// <param name="direction">向量</param>
-    public void SetVelocity(float velocity, Vector2 direction)
-    {
-        workspace = direction * velocity;
-        RB.velocity = workspace;
-        CurrentVelocity = workspace;
-    }
-
-    /// <summary>
-    /// 根据速度设置X轴移动
-    /// </summary>
-    /// <param name="velocity">速度</param>
-    public void SetVelocityX(float velocity)
-    {
-        workspace.Set(velocity, CurrentVelocity.y);
-        RB.velocity = workspace;
-        CurrentVelocity = workspace;
-    }
-
-    /// <summary>
-    /// 根据速度设置Y轴移动
-    /// </summary>
-    /// <param name="velocity">速度</param>
-    public void SetVelocityY(float velocity)
-    {
-        workspace.Set(CurrentVelocity.x, velocity);
-        RB.velocity = workspace;
-        CurrentVelocity = workspace;
-    }
-    #endregion
-
-    #region Check Functions 检查函数
-
-    /// <summary>
-    /// 检查天花板
-    /// </summary>
-    /// <returns></returns>
-    public bool CheckForCeiling()
-    {
-        return Physics2D.OverlapCircle(CeilingCheck.position, playerData.groundCheckRadius, playerData.whatIsGround);
-    }
-
-    /// <summary>
-    /// 检查是否在地面
-    /// </summary>
-    /// <returns></returns>
-    public bool CheckIfGrounded()
-    {
-        return Physics2D.OverlapCircle(groundCheck.position, playerData.groundCheckRadius, playerData.whatIsGround);
-    }
-
-    /// <summary>
-    /// 检查是否接触墙壁
-    /// </summary>
-    /// <returns></returns>
-    public bool CheckIfTouchingWall()
-    {
-        return Physics2D.Raycast(wallCheck.position, Vector2.right * FacingDirection, playerData.wallCheckDistance, playerData.whatIsGround);
-    }
-
-    /// <summary>
-    /// 检查是否接触平台
-    /// </summary>
-    /// <returns></returns>
-    public bool CheckIfTouchingLedge()
-    {
-        return Physics2D.Raycast(ledgeCheck.position, Vector2.right * FacingDirection, playerData.wallCheckDistance, playerData.whatIsGround);
-    }
-
-    /// <summary>
-    /// 检查身后是否接触墙壁
-    /// </summary>
-    /// <returns></returns>
-    public bool CheckIfTouchingWallBack()
-    {
-        return Physics2D.Raycast(wallCheck.position, Vector2.right * -FacingDirection, playerData.wallCheckDistance, playerData.whatIsGround);
-    }
-
-    /// <summary>
-    /// 根据X轴输入检查是否要翻转
-    /// </summary>
-    /// <param name="xInput">横轴输入</param>
-    public void CheckIfShouldFlip(int xInput)
-    {
-        if (xInput != 0 && xInput != FacingDirection)
-        {
-            Flip();
-        }
-    }
-
     #endregion
 
     #region Other Functions 其他函数
@@ -320,22 +172,6 @@ public class Player : MonoBehaviour
     }
 
     /// <summary>
-    /// 确定玩家平台攀爬后到达的内角位置
-    /// </summary>
-    /// <returns>内角位置</returns>
-    public Vector2 DetermineCornerPosition()
-    {
-        RaycastHit2D xHit = Physics2D.Raycast(wallCheck.position, Vector2.right * FacingDirection, playerData.wallCheckDistance, playerData.whatIsGround);
-        float xDist = xHit.distance;
-        workspace.Set((xDist + 0.015f) * FacingDirection, 0f);
-        RaycastHit2D yHit = Physics2D.Raycast(ledgeCheck.position + (Vector3)(workspace), Vector2.down, ledgeCheck.position.y - wallCheck.position.y + 0.015f, playerData.whatIsGround);
-        float yDist = yHit.distance;
-
-        workspace.Set(wallCheck.position.x + (xDist * FacingDirection), ledgeCheck.position.y - yDist);
-        return workspace;
-    }
-
-    /// <summary>
     /// 动画触发
     /// </summary>
     private void AnimationTrigger() => StateMachine.CurrentState.AnimationTrigger();
@@ -345,13 +181,5 @@ public class Player : MonoBehaviour
     /// </summary>
     private void AnimationFinishTrigger() => StateMachine.CurrentState.AnimationFinishTrigger();
 
-    /// <summary>
-    /// 翻转
-    /// </summary>
-    private void Flip()
-    {
-        FacingDirection *= -1;
-        transform.Rotate(0.0f, 180.0f, 0.0f);
-    }
     #endregion
 }
