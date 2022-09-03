@@ -7,6 +7,8 @@ using UnityEngine;
 /// </summary>
 public class PlayerState
 {
+    protected Core core;
+
     /// <summary>
     /// 玩家
     /// </summary>
@@ -45,6 +47,7 @@ public class PlayerState
         this.stateMachine = stateMachine;
         this.playerData = playerData;
         this.animBoolName = animBoolName;
+        core = player.Core;
     }
 
     /// <summary>
