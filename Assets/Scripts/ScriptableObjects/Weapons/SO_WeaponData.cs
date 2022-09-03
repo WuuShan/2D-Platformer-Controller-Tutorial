@@ -9,7 +9,12 @@ using UnityEngine;
 public class SO_WeaponData : ScriptableObject
 {
     /// <summary>
-    /// 移动速度
+    /// 攻击次数
     /// </summary>
-    public float[] movementSpeed;
+    public int amountOfAttacks { get; protected set; }
+
+    /// <summary>
+    /// 攻击时的位移
+    /// </summary>
+    public float[] movementSpeed { get; protected set; }
 }

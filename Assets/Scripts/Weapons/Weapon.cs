@@ -10,7 +10,7 @@ public class Weapon : MonoBehaviour
     /// <summary>
     /// 武器数据
     /// </summary>
-    [SerializeField] private SO_WeaponData weaponData;
+    [SerializeField] protected SO_WeaponData weaponData;
 
     protected Animator baseAnimator;
     protected Animator weaponAnimator;
@@ -22,7 +22,7 @@ public class Weapon : MonoBehaviour
     /// </summary>
     protected int attackCounter;
 
-    protected virtual void Start()
+    protected virtual void Awake()
     {
         baseAnimator = transform.Find("Base").GetComponent<Animator>();
         weaponAnimator = transform.Find("Weapon").GetComponent<Animator>();
@@ -37,7 +37,7 @@ public class Weapon : MonoBehaviour
     {
         gameObject.SetActive(true);
 
-        if (attackCounter >= weaponData.movementSpeed.Length)
+        if (attackCounter >= weaponData.amountOfAttacks)
         {
             attackCounter = 0;
         }
@@ -111,6 +111,11 @@ public class Weapon : MonoBehaviour
     public virtual void AnimationTurnOnFlipTrigger()
     {
         state.SetFlipCheck(true);
+    }
+
+    public virtual void AnimationActionTrigger()
+    {
+
     }
 
     #endregion
