@@ -84,6 +84,8 @@ public class Entity : MonoBehaviour
 
     public virtual void Update()
     {
+        Core.LogicUpdate();
+
         stateMachine.currentState.LogicUpdate();
 
         anim.SetFloat("yVelocity", Core.Movement.RB.velocity.y);
@@ -137,45 +139,13 @@ public class Entity : MonoBehaviour
         Core.Movement.RB.velocity = velocityWorkspace;
     }
 
+    /// <summary>
+    /// 重置眩晕抗性
+    /// </summary>
     public virtual void ResetStunResistance()
     {
         isStunned = false;
         currentStunResistance = entityData.stunResistance;
-    }
-
-    /// <summary>
-    /// 根据攻击详情受到伤害
-    /// </summary>
-    /// <param name="attackDetails">来自攻击者的攻击详情</param>
-    public virtual void Damage(AttackDetails attackDetails)
-    {
-        lastDamageTime = Time.time;
-
-        currentHealth -= attackDetails.damageAmount;
-        currentStunResistance -= attackDetails.stunDamageAmount;
-
-        DamageHop(entityData.damageHopSpeed);
-
-        Instantiate(entityData.hitParticle, transform.position, Quaternion.Euler(0f, 0f, Random.Range(0f, 360f)));
-
-        if (attackDetails.position.x > transform.position.x)
-        {
-            lastDamageDirection = -1;
-        }
-        else
-        {
-            lastDamageDirection = 1;
-        }
-
-        if (currentStunResistance <= 0)
-        {
-            isStunned = true;
-        }
-
-        if (currentHealth <= 0)
-        {
-            isDead = true;
-        }
     }
 
     public virtual void OnDrawGizmos()

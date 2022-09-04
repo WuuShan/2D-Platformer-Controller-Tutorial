@@ -73,6 +73,8 @@ public class LookForPlayerState : State
     {
         base.LogicUpdate();
 
+        core.Movement.SetVelocityX(0);
+
         if (turnImmediately)
         {
             core.Movement.Flip();

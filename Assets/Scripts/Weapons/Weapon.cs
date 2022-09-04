@@ -17,6 +17,8 @@ public class Weapon : MonoBehaviour
 
     protected PlayerAttackState state;
 
+    protected Core core;
+
     /// <summary>
     /// 攻击计数器
     /// </summary>
@@ -66,9 +68,10 @@ public class Weapon : MonoBehaviour
     /// 初始化武器的玩家攻击状态
     /// </summary>
     /// <param name="state">玩家攻击状态</param>
-    public void InitializeWeapon(PlayerAttackState state)
+    public void InitializeWeapon(PlayerAttackState state, Core core)
     {
         this.state = state;
+        this.core = core;
     }
 
     #region Animation Triggers

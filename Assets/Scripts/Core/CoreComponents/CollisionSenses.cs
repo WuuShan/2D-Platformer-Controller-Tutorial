@@ -15,17 +15,7 @@ public class CollisionSenses : CoreComponent
     /// </summary>
     public Transform GroundCheck
     {
-        get
-        {
-            if (groundCheck)
-            {
-                return groundCheck;
-            }
-
-            Debug.LogError("No Ground Check on " + core.transform.parent.name);
-            return null;
-        }
-
+        get => GenericNotInplementedError<Transform>.TryGet(groundCheck, transform.parent.name);
         private set => groundCheck = value;
     }
     /// <summary>
@@ -33,16 +23,7 @@ public class CollisionSenses : CoreComponent
     /// </summary>
     public Transform WallCheck
     {
-        get
-        {
-            if (wallCheck)
-            {
-                return wallCheck;
-            }
-
-            Debug.LogError("No wall Check on " + core.transform.parent.name);
-            return null;
-        }
+        get => GenericNotInplementedError<Transform>.TryGet(wallCheck, transform.parent.name);
 
         private set => wallCheck = value;
     }
@@ -51,17 +32,7 @@ public class CollisionSenses : CoreComponent
     /// </summary>
     public Transform LedgeCheckHorizontal
     {
-        get
-        {
-            if (ledgeCheckHorizontal)
-            {
-                return ledgeCheckHorizontal;
-            }
-
-            Debug.LogError("No ledge Check Horizontal on " + core.transform.parent.name);
-            return null;
-        }
-
+        get => GenericNotInplementedError<Transform>.TryGet(ledgeCheckHorizontal, transform.parent.name);
         private set => ledgeCheckHorizontal = value;
     }
     /// <summary>
@@ -69,16 +40,7 @@ public class CollisionSenses : CoreComponent
     /// </summary>
     public Transform LedgeCheckVertical
     {
-        get
-        {
-            if (ledgeCheckVertical)
-            {
-                return ledgeCheckVertical;
-            }
-
-            Debug.LogError("No ledge Check Vertical on " + core.transform.parent.name);
-            return null;
-        }
+        get => GenericNotInplementedError<Transform>.TryGet(ledgeCheckVertical, transform.parent.name);
         private set => ledgeCheckVertical = value;
     }
     /// <summary>
@@ -86,16 +48,7 @@ public class CollisionSenses : CoreComponent
     /// </summary>
     public Transform CeilingCheck
     {
-        get
-        {
-            if (ceilingCheck)
-            {
-                return ceilingCheck;
-            }
-
-            Debug.LogError("No ceiling Check on " + core.transform.parent.name);
-            return null;
-        }
+        get => GenericNotInplementedError<Transform>.TryGet(ceilingCheck, transform.parent.name);
         private set => ceilingCheck = value;
     }
 

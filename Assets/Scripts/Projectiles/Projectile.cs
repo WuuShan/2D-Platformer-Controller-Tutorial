@@ -10,7 +10,7 @@ public class Projectile : MonoBehaviour
     /// <summary>
     /// 攻击详情
     /// </summary>
-    private AttackDetails attackDetails;
+    // private AttackDetails attackDetails;
 
     /// <summary>
     /// 速度
@@ -68,7 +68,7 @@ public class Projectile : MonoBehaviour
     {
         if (!hasHitGround)
         {
-            attackDetails.position = transform.position;
+            // attackDetails.position = transform.position;
 
             if (isGravityOn)
             {
@@ -87,7 +87,7 @@ public class Projectile : MonoBehaviour
 
             if (damageHit)
             {
-                damageHit.transform.SendMessage("Damage", attackDetails);
+                //damageHit.transform.SendMessage("Damage", attackDetails);
                 Destroy(gameObject);
             }
 
@@ -116,7 +116,7 @@ public class Projectile : MonoBehaviour
     {
         this.speed = speed;
         this.travelDistance = travelDistance;
-        attackDetails.damageAmount = damage;
+        //attackDetails.damageAmount = damage;
     }
 
     private void OnDrawGizmos()
