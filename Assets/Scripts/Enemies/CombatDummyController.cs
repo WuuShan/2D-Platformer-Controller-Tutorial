@@ -90,49 +90,6 @@ public class CombatDummyController : MonoBehaviour
         CheckKnockback();
     }
 
-    /// <summary>
-    /// 根据伤害值减少对应生命值，并激活相应命中粒子、动画和位移
-    /// </summary>
-    /// <param name="details">伤害值</param>
-    private void Damage(AttackDetails details)
-    {
-        currentHealth -= details.damageAmount;
-
-        if (details.position.x < aliveGO.transform.position.x)
-        {
-            playerFacingDirection = 1;
-        }
-        else
-        {
-            playerFacingDirection = -1;
-        }
-
-        Instantiate(hitParticle, aliveGO.transform.position, Quaternion.Euler(0.0f, 0.0f, Random.Range(0.0f, 360.0f)));
-
-        if (playerFacingDirection == 1)
-        {
-            playerOnLeft = true;
-        }
-        else
-        {
-            playerOnLeft = false;
-        }
-
-        aliveAnim.SetBool("PlayerOnLeft", playerOnLeft);
-        aliveAnim.SetTrigger("damage");
-
-        if (applyKnockback && currentHealth > 0.0f)
-        {
-            // Knockback
-            Knockback();
-        }
-
-        if (currentHealth <= 0)
-        {
-            // Dead
-            Die();
-        }
-    }
 
     /// <summary>
     /// 击退

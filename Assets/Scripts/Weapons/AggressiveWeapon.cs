@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 /// <summary>
 /// 攻击性武器
@@ -13,9 +14,13 @@ public class AggressiveWeapon : Weapon
     protected SO_AggressiveWeaponData aggressiveWeaponData;
 
     /// <summary>
-    /// 用于检测拥有可伤害接口列表
+    /// 用于存储检测到的可伤害接口列表
     /// </summary>
     private List<IDamageable> detectedDamageable = new List<IDamageable>();
+    /// <summary>
+    /// 用于存储检测到的击退接口列表
+    /// </summary>
+    private List<IKnockbackable> detectedKnockbackables = new List<IKnockbackable>();
 
     protected override void Awake()
     {
@@ -45,9 +50,14 @@ public class AggressiveWeapon : Weapon
     {
         WeaponAttackDetails details = aggressiveWeaponData.AttackDetails[attackCounter];
 
-        foreach (IDamageable item in detectedDamageable)
+        foreach (IDamageable item in detectedDamageable.ToList())
         {
             item.Damage(details.damageAmount);
+        }
+
+        foreach (IKnockbackable item in detectedKnockbackables.ToList())
+        {
+            item.Knockback(details.knockbackAngle, details.knockbackStrenght, core.Movement.FacingDirection);
         }
     }
 
@@ -59,6 +69,13 @@ public class AggressiveWeapon : Weapon
         {
             detectedDamageable.Add(damageable);
         }
+
+        IKnockbackable knockbackable = collision.GetComponent<IKnockbackable>();
+
+        if (knockbackable != null)
+        {
+            detectedKnockbackables.Add(knockbackable);
+        }
     }
 
     public void RemoveFromDetected(Collider2D collision)
@@ -68,6 +85,13 @@ public class AggressiveWeapon : Weapon
         if (damageable != null)
         {
             detectedDamageable.Remove(damageable);
+        }
+
+        IKnockbackable knockbackable = collision.GetComponent<IKnockbackable>();
+
+        if (knockbackable != null)
+        {
+            detectedKnockbackables.Remove(knockbackable);
         }
     }
 

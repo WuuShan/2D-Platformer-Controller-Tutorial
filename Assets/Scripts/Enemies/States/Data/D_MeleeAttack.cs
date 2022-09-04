@@ -18,6 +18,15 @@ public class D_MeleeAttack : ScriptableObject
     public float attackDamage = 10f;
 
     /// <summary>
+    /// 击退角度
+    /// </summary>
+    public Vector2 knockbackAngle = Vector2.one;
+    /// <summary>
+    /// 击退力度
+    /// </summary>
+    public float knockbackStrength = 10f;
+
+    /// <summary>
     /// 玩家图层蒙版
     /// </summary>
     public LayerMask whatIsPlayer;

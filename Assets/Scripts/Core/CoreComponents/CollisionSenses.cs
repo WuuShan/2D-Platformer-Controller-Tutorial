@@ -13,19 +13,44 @@ public class CollisionSenses : CoreComponent
     /// <summary>
     /// 地面检查坐标
     /// </summary>
-    public Transform GroundCheck { get => groundCheck; private set => groundCheck = value; }
+    public Transform GroundCheck
+    {
+        get => GenericNotInplementedError<Transform>.TryGet(groundCheck, transform.parent.name);
+        private set => groundCheck = value;
+    }
     /// <summary>
     /// 墙壁检查坐标
     /// </summary>
-    public Transform WallCheck { get => wallCheck; private set => wallCheck = value; }
+    public Transform WallCheck
+    {
+        get => GenericNotInplementedError<Transform>.TryGet(wallCheck, transform.parent.name);
+
+        private set => wallCheck = value;
+    }
     /// <summary>
-    /// 平台检查坐标
+    /// 平台横向检查坐标
     /// </summary>
-    public Transform LedgeCheck { get => ledgeCheck; private set => ledgeCheck = value; }
+    public Transform LedgeCheckHorizontal
+    {
+        get => GenericNotInplementedError<Transform>.TryGet(ledgeCheckHorizontal, transform.parent.name);
+        private set => ledgeCheckHorizontal = value;
+    }
+    /// <summary>
+    /// 平台纵向检查坐标
+    /// </summary>
+    public Transform LedgeCheckVertical
+    {
+        get => GenericNotInplementedError<Transform>.TryGet(ledgeCheckVertical, transform.parent.name);
+        private set => ledgeCheckVertical = value;
+    }
     /// <summary>
     /// 天花板检查坐标
     /// </summary>
-    public Transform CeilingCheck { get => ceilingCheck; private set => ceilingCheck = value; }
+    public Transform CeilingCheck
+    {
+        get => GenericNotInplementedError<Transform>.TryGet(ceilingCheck, transform.parent.name);
+        private set => ceilingCheck = value;
+    }
 
     /// <summary>
     /// 地面检查范围
@@ -42,7 +67,8 @@ public class CollisionSenses : CoreComponent
 
     [SerializeField] private Transform groundCheck;
     [SerializeField] private Transform wallCheck;
-    [SerializeField] private Transform ledgeCheck;
+    [SerializeField] private Transform ledgeCheckHorizontal;
+    [SerializeField] private Transform ledgeCheckVertical;
     [SerializeField] private Transform ceilingCheck;
 
 
@@ -72,7 +98,7 @@ public class CollisionSenses : CoreComponent
     /// <returns></returns>
     public bool Ground
     {
-        get => Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, whatIsGround);
+        get => Physics2D.OverlapCircle(GroundCheck.position, groundCheckRadius, whatIsGround);
     }
 
     /// <summary>
@@ -81,16 +107,25 @@ public class CollisionSenses : CoreComponent
     /// <returns></returns>
     public bool WallFront
     {
-        get => Physics2D.Raycast(wallCheck.position, Vector2.right * core.Movement.FacingDirection, wallCheckDistance, whatIsGround);
+        get => Physics2D.Raycast(WallCheck.position, Vector2.right * core.Movement.FacingDirection, wallCheckDistance, whatIsGround);
     }
 
     /// <summary>
-    /// 检查是否接触平台
+    /// 横向检查是否接触平台
     /// </summary>
     /// <returns></returns>
-    public bool Ledge
+    public bool LedgeHorizontal
     {
-        get => Physics2D.Raycast(ledgeCheck.position, Vector2.right * core.Movement.FacingDirection, wallCheckDistance, whatIsGround);
+        get => Physics2D.Raycast(LedgeCheckHorizontal.position, Vector2.right * core.Movement.FacingDirection, wallCheckDistance, whatIsGround);
+    }
+
+    /// <summary>
+    /// 纵向检查是否接触平台
+    /// </summary>
+    /// <returns></returns>
+    public bool LedgeVertical
+    {
+        get => Physics2D.Raycast(LedgeCheckVertical.position, Vector2.down, wallCheckDistance, whatIsGround);
     }
 
     /// <summary>
@@ -99,7 +134,7 @@ public class CollisionSenses : CoreComponent
     /// <returns></returns>
     public bool WallBack
     {
-        get => Physics2D.Raycast(wallCheck.position, Vector2.right * -core.Movement.FacingDirection, wallCheckDistance, whatIsGround);
+        get => Physics2D.Raycast(WallCheck.position, Vector2.right * -core.Movement.FacingDirection, wallCheckDistance, whatIsGround);
     }
 
     #endregion

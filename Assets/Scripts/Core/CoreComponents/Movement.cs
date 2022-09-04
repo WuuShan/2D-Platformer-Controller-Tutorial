@@ -9,7 +9,15 @@ public class Movement : CoreComponent
 {
     public Rigidbody2D RB { get; private set; }
 
+    /// <summary>
+    /// 面向方向
+    /// </summary>
     public int FacingDirection { get; private set; }
+
+    /// <summary>
+    /// 能否设置速度
+    /// </summary>
+    public bool CanSetVelocity { get; set; }
 
     public Vector2 CurrentVelocity { get; private set; }
 
@@ -22,6 +30,7 @@ public class Movement : CoreComponent
         RB = GetComponentInParent<Rigidbody2D>();
 
         FacingDirection = 1;
+        CanSetVelocity = true;
     }
 
     public void LogicUpdate()
@@ -36,8 +45,8 @@ public class Movement : CoreComponent
     /// </summary>
     public void SetVelocityZero()
     {
-        RB.velocity = Vector2.zero;
-        CurrentVelocity = Vector2.zero;
+        workspace = Vector2.zero;
+        SetFinalVelocity();
     }
 
     /// <summary>
@@ -50,8 +59,7 @@ public class Movement : CoreComponent
     {
         angle.Normalize();
         workspace.Set(angle.x * velocity * direction, angle.y * velocity);
-        RB.velocity = workspace;
-        CurrentVelocity = workspace;
+        SetFinalVelocity();
     }
 
     /// <summary>
@@ -62,8 +70,7 @@ public class Movement : CoreComponent
     public void SetVelocity(float velocity, Vector2 direction)
     {
         workspace = direction * velocity;
-        RB.velocity = workspace;
-        CurrentVelocity = workspace;
+        SetFinalVelocity();
     }
 
     /// <summary>
@@ -73,8 +80,7 @@ public class Movement : CoreComponent
     public void SetVelocityX(float velocity)
     {
         workspace.Set(velocity, CurrentVelocity.y);
-        RB.velocity = workspace;
-        CurrentVelocity = workspace;
+        SetFinalVelocity();
     }
 
     /// <summary>
@@ -84,8 +90,19 @@ public class Movement : CoreComponent
     public void SetVelocityY(float velocity)
     {
         workspace.Set(CurrentVelocity.x, velocity);
-        RB.velocity = workspace;
-        CurrentVelocity = workspace;
+        SetFinalVelocity();
+    }
+
+    /// <summary>
+    /// 设置最终速度
+    /// </summary>
+    private void SetFinalVelocity()
+    {
+        if (CanSetVelocity)
+        {
+            RB.velocity = workspace;
+            CurrentVelocity = workspace;
+        }
     }
 
     /// <summary>
@@ -103,7 +120,7 @@ public class Movement : CoreComponent
     /// <summary>
     /// 翻转
     /// </summary>
-    private void Flip()
+    public void Flip()
     {
         FacingDirection *= -1;
         RB.transform.Rotate(0.0f, 180.0f, 0.0f);

@@ -30,9 +30,9 @@ public class Enemy2 : Entity
     [SerializeField] private Transform meleeAttackPosition;
     [SerializeField] private Transform rangedAttackPosition;
 
-    public override void Start()
+    public override void Awake()
     {
-        base.Start();
+        base.Awake();
 
         moveState = new E2_MoveState(this, stateMachine, "move", moveStateData, this);
         idleState = new E2_IdleState(this, stateMachine, "idle", idleStateData, this);
@@ -43,7 +43,10 @@ public class Enemy2 : Entity
         deadState = new E2_DeadState(this, stateMachine, "dead", deadStateData, this);
         dodgeState = new E2_DodgeState(this, stateMachine, "dodge", dodgeStateData, this);
         rangedAttackState = new E2_RangedAttackState(this, stateMachine, "rangedAttack", rangedAttackPosition, rangedAttackStateData, this);
+    }
 
+    private void Start()
+    {
         stateMachine.Initialize(moveState);
     }
 
@@ -52,28 +55,5 @@ public class Enemy2 : Entity
         base.OnDrawGizmos();
 
         Gizmos.DrawWireSphere(meleeAttackPosition.position, meleeAttackStateData.attackRadius);
-    }
-
-    public override void Damage(AttackDetails attackDetails)
-    {
-        base.Damage(attackDetails);
-
-        if (isDead)
-        {
-            stateMachine.ChangeState(deadState);
-        }
-        else if (isStunned && stateMachine.currentState != stunState)
-        {
-            stateMachine.ChangeState(stunState);
-        }
-        else if (CheckPlayerInMinAggroRange())
-        {
-            stateMachine.ChangeState(rangedAttackState);
-        }
-        else if (!CheckPlayerInMinAggroRange())
-        {
-            lookForPlayerState.SetTurnImmediately(true);
-            stateMachine.ChangeState(lookForPlayerState);
-        }
     }
 }

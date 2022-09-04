@@ -15,6 +15,10 @@ public class State
     /// 实体
     /// </summary>
     protected Entity entity;
+    /// <summary>
+    /// 核心
+    /// </summary>
+    protected Core core;
 
     /// <summary>
     /// 开始时间
@@ -31,6 +35,7 @@ public class State
         this.entity = entity;
         this.stateMachine = stateMachine;
         this.animBoolName = animBoolName;
+        core = entity.Core;
     }
 
     /// <summary>
