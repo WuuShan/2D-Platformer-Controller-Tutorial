@@ -71,11 +71,8 @@ public class CollisionSenses : CoreComponent
     [SerializeField] private Transform ledgeCheckVertical;
     [SerializeField] private Transform ceilingCheck;
 
-
     [SerializeField] private float groundCheckRadius;
-
     [SerializeField] private float wallCheckDistance;
-
 
     [SerializeField] private LayerMask whatIsGround;
 
