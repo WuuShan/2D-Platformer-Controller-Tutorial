@@ -8,6 +8,11 @@ using UnityEngine;
 public class Combat : CoreComponent, IDamageable, IKnockbackable
 {
     /// <summary>
+    /// 最大击退时间
+    /// </summary>
+    [SerializeField] private float maxKnockbackTime = 0.2f;
+
+    /// <summary>
     /// 是否激活击退
     /// </summary>
     private bool isKnockbackActive;
@@ -19,7 +24,7 @@ public class Combat : CoreComponent, IDamageable, IKnockbackable
     /// <summary>
     /// 逻辑更新
     /// </summary>
-    public void LogicUpdate()
+    public override void LogicUpdate()
     {
         CheckKnockback();
     }
@@ -27,6 +32,8 @@ public class Combat : CoreComponent, IDamageable, IKnockbackable
     public void Damage(float amount)
     {
         Debug.Log(core.transform.parent.name + " Damaged!");
+        core.Stats.DecreaseHealth(amount);
+
     }
 
     public void Knockback(Vector2 angle, float strength, int direction)
@@ -40,7 +47,7 @@ public class Combat : CoreComponent, IDamageable, IKnockbackable
 
     private void CheckKnockback()
     {
-        if (isKnockbackActive && core.Movement.CurrentVelocity.y <= 0.01f && core.CollisionSenses.Ground)
+        if (isKnockbackActive && ((core.Movement.CurrentVelocity.y <= 0.01f && core.CollisionSenses.Ground) || Time.time >= knockbackStartTime + maxKnockbackTime))
         {
             isKnockbackActive = false;
             core.Movement.CanSetVelocity = true;
