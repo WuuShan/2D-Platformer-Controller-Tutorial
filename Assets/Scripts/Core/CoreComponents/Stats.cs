@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -15,6 +16,11 @@ public class Stats : CoreComponent
     /// 当前生命值
     /// </summary>
     private float currentHealth;
+
+    /// <summary>
+    /// 生命值为零事件
+    /// </summary>
+    public event Action HealthZero;
 
     protected override void Awake()
     {
@@ -34,6 +40,9 @@ public class Stats : CoreComponent
         if (currentHealth <= 0)
         {
             currentHealth = 0;
+            // Invoke the event. ?. needed to avoid errors if there are no subscribers.
+            // 调用事件。 ?. 如果没有订阅者，需要避免错误。
+            HealthZero?.Invoke();
             Debug.Log("Health is zero!!");
         }
     }

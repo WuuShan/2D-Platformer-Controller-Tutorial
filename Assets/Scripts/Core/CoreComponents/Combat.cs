@@ -10,15 +10,22 @@ public class Combat : CoreComponent, IDamageable, IKnockbackable
     private Movement Movement { get => movement ??= core.GetCoreComponent<Movement>(); }
     private CollisionSenses CollisionSenses { get => collisionSenses ??= core.GetCoreComponent<CollisionSenses>(); }
     private Stats Stats { get => stats ??= core.GetCoreComponent<Stats>(); }
+    private ParticleManager ParticleManager { get => particleManager ??= core.GetCoreComponent<ParticleManager>(); }
 
     private Movement movement;
     private CollisionSenses collisionSenses;
     private Stats stats;
+    private ParticleManager particleManager;
 
     /// <summary>
     /// 最大击退时间
     /// </summary>
     [SerializeField] private float maxKnockbackTime = 0.2f;
+
+    /// <summary>
+    /// 伤害粒子
+    /// </summary>
+    [SerializeField] private GameObject damageParticles;
 
     /// <summary>
     /// 是否激活击退
@@ -41,6 +48,7 @@ public class Combat : CoreComponent, IDamageable, IKnockbackable
     {
         Debug.Log(core.transform.parent.name + " Damaged!");
         Stats?.DecreaseHealth(amount);
+        ParticleManager?.StartParticlesWithRandomRotation(damageParticles);
     }
 
     public void Knockback(Vector2 angle, float strength, int direction)

@@ -80,7 +80,6 @@ public class PlayerGroundedState : PlayerState
             isTouchingLedge = CollisionSenses.LedgeHorizontal;
             isTouchingCeiling = CollisionSenses.Ceiling;
         }
-
     }
 
     public override void Enter()
@@ -114,7 +113,7 @@ public class PlayerGroundedState : PlayerState
         {
             stateMachine.ChangeState(player.SecondaryAttackState);
         }
-        else if (jumpInput && player.JumpState.CanJump() && !isTouchingCeiling)//TODO:在天花板下不能跳跃
+        else if (jumpInput && player.JumpState.CanJump() && !isTouchingCeiling)
         {
             stateMachine.ChangeState(player.JumpState);
         }

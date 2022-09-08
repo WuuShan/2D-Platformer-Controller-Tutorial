@@ -8,13 +8,27 @@ using System.Linq;
 /// </summary>
 public class Core : MonoBehaviour
 {
-
-
     private readonly List<CoreComponent> CoreComponents = new List<CoreComponent>();
 
     private void Awake()
     {
+        // Find all core component children
+        // 查找所有核心组件子组件
+        var comps = GetComponentsInChildren<CoreComponent>();
 
+        // Add componets found to list. Use old function to avoid duplicates.
+        // 将找到的组件添加到列表中。 使用旧功能避免重复。
+        foreach (var component in comps)
+        {
+            AddComponent(component);
+        }
+
+        // Call Init on each
+        // 调用每个Init
+        foreach (var component in CoreComponents)
+        {
+            component.Init(this);
+        }
     }
 
     /// <summary>
