@@ -7,6 +7,9 @@ using UnityEngine;
 /// </summary>
 public class IdleState : State
 {
+    private Movement Movement { get => movement ??= core.GetCoreComponent<Movement>(); }
+    private Movement movement;
+
     /// <summary>
     /// 状态数据
     /// </summary>
@@ -39,7 +42,7 @@ public class IdleState : State
     {
         base.Enter();
 
-        core.Movement.SetVelocityX(0);
+        Movement.SetVelocityX(0);
         isIdleTimeOver = false;
         SetRandomIdleTime();
     }
@@ -50,7 +53,7 @@ public class IdleState : State
 
         if (flipAfterIdle)
         {
-            core.Movement.Flip();
+            Movement.Flip();
         }
     }
 
@@ -58,7 +61,7 @@ public class IdleState : State
     {
         base.LogicUpdate();
 
-        core.Movement.SetVelocityX(0);
+        Movement.SetVelocityX(0);
 
         if (Time.time >= startTime + idleTime)
         {

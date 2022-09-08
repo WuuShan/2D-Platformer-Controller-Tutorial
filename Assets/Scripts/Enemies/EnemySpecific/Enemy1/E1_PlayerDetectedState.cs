@@ -7,6 +7,8 @@ using UnityEngine;
 /// </summary>
 public class E1_PlayerDetectedState : PlayerDetectedState
 {
+    private Movement Movement { get => movement ??= core.GetCoreComponent<Movement>(); }
+    private Movement movement;
     /// <summary>
     /// 敌人
     /// </summary>
@@ -45,7 +47,7 @@ public class E1_PlayerDetectedState : PlayerDetectedState
         }
         else if (!isDetectingLedge)
         {
-            core.Movement.Flip();
+            Movement.Flip();
             stateMachine.ChangeState(enemy.moveState);
         }
     }

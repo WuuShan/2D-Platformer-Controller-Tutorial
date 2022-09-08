@@ -8,6 +8,9 @@ using System.Linq;
 /// </summary>
 public class AggressiveWeapon : Weapon
 {
+    private Movement Movement { get => movement ??= core.GetCoreComponent<Movement>(); }
+    private Movement movement;
+
     /// <summary>
     /// 攻击性武器数据
     /// </summary>
@@ -57,7 +60,7 @@ public class AggressiveWeapon : Weapon
 
         foreach (IKnockbackable item in detectedKnockbackables.ToList())
         {
-            item.Knockback(details.knockbackAngle, details.knockbackStrenght, core.Movement.FacingDirection);
+            item.Knockback(details.knockbackAngle, details.knockbackStrenght, Movement.FacingDirection);
         }
     }
 

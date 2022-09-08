@@ -7,6 +7,8 @@ using UnityEngine;
 /// </summary>
 public class CollisionSenses : CoreComponent
 {
+    private Movement Movement { get => movement ??= core.GetCoreComponent<Movement>(); }
+    private Movement movement;
 
     #region Check Transforms 检查坐标
 
@@ -104,7 +106,7 @@ public class CollisionSenses : CoreComponent
     /// <returns></returns>
     public bool WallFront
     {
-        get => Physics2D.Raycast(WallCheck.position, Vector2.right * core.Movement.FacingDirection, wallCheckDistance, whatIsGround);
+        get => Physics2D.Raycast(WallCheck.position, Vector2.right * Movement.FacingDirection, wallCheckDistance, whatIsGround);
     }
 
     /// <summary>
@@ -113,7 +115,7 @@ public class CollisionSenses : CoreComponent
     /// <returns></returns>
     public bool LedgeHorizontal
     {
-        get => Physics2D.Raycast(LedgeCheckHorizontal.position, Vector2.right * core.Movement.FacingDirection, wallCheckDistance, whatIsGround);
+        get => Physics2D.Raycast(LedgeCheckHorizontal.position, Vector2.right * Movement.FacingDirection, wallCheckDistance, whatIsGround);
     }
 
     /// <summary>
@@ -131,7 +133,7 @@ public class CollisionSenses : CoreComponent
     /// <returns></returns>
     public bool WallBack
     {
-        get => Physics2D.Raycast(WallCheck.position, Vector2.right * -core.Movement.FacingDirection, wallCheckDistance, whatIsGround);
+        get => Physics2D.Raycast(WallCheck.position, Vector2.right * -Movement.FacingDirection, wallCheckDistance, whatIsGround);
     }
 
     #endregion
