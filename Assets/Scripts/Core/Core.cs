@@ -1,70 +1,20 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 /// <summary>
 /// 用来管理各种核心组件
 /// </summary>
 public class Core : MonoBehaviour
 {
-    /// <summary>
-    /// 处理刚体移动
-    /// </summary>
-    public Movement Movement
-    {
-        get => GenericNotInplementedError<Movement>.TryGet(movement, transform.parent.name);
-        private set => movement = value;
-    }
-    /// <summary>
-    /// 处理碰撞检查
-    /// </summary>
-    public CollisionSenses CollisionSenses
-    {
-        get => GenericNotInplementedError<CollisionSenses>.TryGet(collisionSenses, transform.parent.name);
-        private set => collisionSenses = value;
-    }
-    /// <summary>
-    /// 处理战斗相关
-    /// </summary>
-    public Combat Combat
-    {
-        get => GenericNotInplementedError<Combat>.TryGet(combat, transform.parent.name);
-        private set => combat = value;
-    }
-    /// <summary>
-    /// 处理数据统计
-    /// </summary>
-    public Stats Stats
-    {
-        get => GenericNotInplementedError<Stats>.TryGet(stats, transform.parent.name);
-        private set => stats = value;
-    }
 
-    /// <summary>
-    /// 移动组件
-    /// </summary>
-    private Movement movement;
-    /// <summary>
-    /// 碰撞感知组件
-    /// </summary>
-    private CollisionSenses collisionSenses;
-    /// <summary>
-    /// 战斗组件
-    /// </summary>
-    private Combat combat;
-    /// <summary>
-    /// 数据统计组件
-    /// </summary>
-    private Stats stats;
 
-    private List<ILogicUpdate> components = new List<ILogicUpdate>();
+    private readonly List<CoreComponent> CoreComponents = new List<CoreComponent>();
 
     private void Awake()
     {
-        Movement = GetComponentInChildren<Movement>();
-        CollisionSenses = GetComponentInChildren<CollisionSenses>();
-        Combat = GetComponentInChildren<Combat>();
-        Stats = GetComponentInChildren<Stats>();
+
     }
 
     /// <summary>
@@ -72,21 +22,50 @@ public class Core : MonoBehaviour
     /// </summary>
     public void LogicUpdate()
     {
-        foreach (ILogicUpdate component in components)
+        foreach (CoreComponent component in CoreComponents)
         {
             component.LogicUpdate();
         }
     }
 
     /// <summary>
-    /// 添加拥有逻辑更新的组件
+    /// 将核心组件添加到列表
     /// </summary>
-    /// <param name="component">组件</param>
-    public void AddComponent(ILogicUpdate component)
+    /// <param name="component">核心组件</param>
+    public void AddComponent(CoreComponent component)
     {
-        if (!components.Contains(component))    // 判断列表是否有该组件
+        if (!CoreComponents.Contains(component))    // 判断列表是否有该核心组件
         {
-            components.Add(component);
+            CoreComponents.Add(component);
         }
+    }
+
+    /// <summary>
+    /// 根据组件类型获得核心组件
+    /// </summary>
+    /// <typeparam name="T">组件类型</typeparam>
+    /// <returns></returns>
+    public T GetCoreComponent<T>() where T : CoreComponent
+    {
+        var comp = CoreComponents.OfType<T>().FirstOrDefault();    // 返回 T 类型集合中的第一个组件，若是长度为 0 则返回 null
+
+        if (comp == null)
+        {
+            Debug.LogWarning($"{typeof(T)} not found on {transform.parent.name}");
+        }
+
+        return comp;
+    }
+
+    /// <summary>
+    /// 根据组件获得核心组件
+    /// </summary>
+    /// <typeparam name="T">组件类型</typeparam>
+    /// <param name="value">组件</param>
+    /// <returns></returns>
+    public T GetCoreComponent<T>(ref T value) where T : CoreComponent
+    {
+        value = GetCoreComponent<T>();
+        return value;
     }
 }

@@ -22,6 +22,24 @@ public class PlayerGroundedState : PlayerState
     protected bool isTouchingCeiling;
 
     /// <summary>
+    /// 移动组件
+    /// </summary>
+    protected Movement Movement { get => movement ??= core.GetCoreComponent<Movement>(); }
+    /// <summary>
+    /// 移动组件
+    /// </summary>
+    private Movement movement;
+
+    /// <summary>
+    /// 碰撞检查组件
+    /// </summary>
+    private CollisionSenses CollisionSenses { get => collisionSenses ??= core.GetCoreComponent<CollisionSenses>(); }
+    /// <summary>
+    /// 碰撞检查组件
+    /// </summary>
+    private CollisionSenses collisionSenses;
+
+    /// <summary>
     /// 跳跃输入
     /// </summary>
     private bool jumpInput;
@@ -55,10 +73,14 @@ public class PlayerGroundedState : PlayerState
     {
         base.DoChecks();
 
-        isGrounded = core.CollisionSenses.Ground;
-        isTouchingWall = core.CollisionSenses.WallFront;
-        isTouchingLedge = core.CollisionSenses.LedgeHorizontal;
-        isTouchingCeiling = core.CollisionSenses.Ceiling;
+        if (CollisionSenses)
+        {
+            isGrounded = CollisionSenses.Ground;
+            isTouchingWall = CollisionSenses.WallFront;
+            isTouchingLedge = CollisionSenses.LedgeHorizontal;
+            isTouchingCeiling = CollisionSenses.Ceiling;
+        }
+
     }
 
     public override void Enter()

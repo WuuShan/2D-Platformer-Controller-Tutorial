@@ -7,6 +7,12 @@ using UnityEngine;
 /// </summary>
 public class MoveState : State
 {
+    private Movement Movement { get => movement ??= core.GetCoreComponent<Movement>(); }
+    private CollisionSenses CollisionSenses { get => collisionSenses ??= core.GetCoreComponent<CollisionSenses>(); }
+
+    private Movement movement;
+    private CollisionSenses collisionSenses;
+
     /// <summary>
     /// 状态数据
     /// </summary>
@@ -33,7 +39,7 @@ public class MoveState : State
     public override void Enter()
     {
         base.Enter();
-        core.Movement.SetVelocityX(stateData.movementSpeed * core.Movement.FacingDirection);
+        Movement.SetVelocityX(stateData.movementSpeed * Movement.FacingDirection);
     }
 
     public override void Exit()
@@ -45,7 +51,7 @@ public class MoveState : State
     {
         base.LogicUpdate();
 
-        core.Movement.SetVelocityX(stateData.movementSpeed * core.Movement.FacingDirection);
+        Movement.SetVelocityX(stateData.movementSpeed * Movement.FacingDirection);
     }
 
     public override void PhysicsUpdate()
@@ -57,8 +63,8 @@ public class MoveState : State
     {
         base.DoChecks();
 
-        isDetectingWall = core.CollisionSenses.WallFront;
-        isDetectingLedge = core.CollisionSenses.LedgeVertical;
+        isDetectingWall = CollisionSenses.WallFront;
+        isDetectingLedge = CollisionSenses.LedgeVertical;
         isPlayerInMinAggroRange = entity.CheckPlayerInMinAggroRange();
     }
 

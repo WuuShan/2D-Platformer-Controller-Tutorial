@@ -7,6 +7,9 @@ using UnityEngine;
 /// </summary>
 public class LookForPlayerState : State
 {
+    private Movement Movement { get => movement ??= core.GetCoreComponent<Movement>(); }
+    private Movement movement;
+
     /// <summary>
     /// 状态数据
     /// </summary>
@@ -61,7 +64,7 @@ public class LookForPlayerState : State
         lastTurnTime = startTime;
         amountOfTurnsDone = 0;
 
-        core.Movement.SetVelocityX(0);
+        Movement.SetVelocityX(0);
     }
 
     public override void Exit()
@@ -73,18 +76,18 @@ public class LookForPlayerState : State
     {
         base.LogicUpdate();
 
-        core.Movement.SetVelocityX(0);
+        Movement.SetVelocityX(0);
 
         if (turnImmediately)
         {
-            core.Movement.Flip();
+            Movement.Flip();
             lastTurnTime = Time.time;
             amountOfTurnsDone++;
             turnImmediately = false;
         }
         else if (Time.time >= lastTurnTime + stateData.timeBetweenTurns && !isAllTurnsDone)
         {
-            core.Movement.Flip();
+            Movement.Flip();
             lastTurnTime = Time.time;
             amountOfTurnsDone++;
         }
